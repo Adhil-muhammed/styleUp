@@ -1,0 +1,79 @@
+import React, { useCallback, useState } from "react";
+import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { BlurView } from "expo-blur";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { useTheme } from "@/hooks/useTheme";
+import { focusGlowStyle, toTextStyle } from "@/config/theme";
+
+interface DiscoverSearchBarProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  onFilterPress?: () => void;
+}
+
+const DiscoverSearchBar = ({
+  value,
+  onChangeText,
+  onFilterPress,
+}: DiscoverSearchBarProps): React.JSX.Element => {
+  const { theme } = useTheme();
+  const [focused, setFocused] = useState(false);
+
+  const handleFocus = useCallback((): void => setFocused(true), []);
+  const handleBlur = useCallback((): void => setFocused(false), []);
+
+  return (
+    <BlurView
+      intensity={theme.glassmorphism.blur}
+      tint="dark"
+      style={[
+        styles.container,
+        {
+          backgroundColor: `${theme.colors.depth.level1}99`,
+          borderColor: theme.colors.border.level1,
+          borderRadius: theme.borderRadius.full,
+        },
+        focused && focusGlowStyle(theme),
+      ]}
+    >
+      <MaterialIcons name="search" size={22} color={theme.colors.text.secondary} />
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        placeholder="Find your next cut..."
+        placeholderTextColor={theme.colors.text.secondary}
+        style={[
+          styles.input,
+          toTextStyle(theme.typography.bodyMd),
+          { color: theme.colors.text.primary },
+        ]}
+      />
+      <Pressable onPress={onFilterPress} hitSlop={8}>
+        <MaterialIcons
+          name="tune"
+          size={22}
+          color={theme.colors.text.secondary}
+        />
+      </Pressable>
+    </BlurView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    gap: 8,
+  },
+  input: {
+    flex: 1,
+    padding: 0,
+  },
+});
+
+export default DiscoverSearchBar;

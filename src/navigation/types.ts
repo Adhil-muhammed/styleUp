@@ -18,10 +18,11 @@ export type AuthStackParamList = {
 };
 
 export type AppTabParamList = {
+  Home: undefined;
+  Discover: undefined;
+  Book: undefined;
   Feed: undefined;
-  Booking: undefined;
-  Journey: undefined;
-  Settings: undefined;
+  Profile: undefined;
 };
 
 // ─── Typed Screen Props ───────────────────────────────────────────────────────

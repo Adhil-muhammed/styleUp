@@ -6,34 +6,18 @@ import type { AppTabScreenProps } from "../navigation/types";
 
 type Props = AppTabScreenProps<"Feed">;
 
-const HelloWorldScreen: React.FC<Props> = () => {
+const FeedScreen = (_props: Props): React.JSX.Element => {
   const { theme } = useTheme();
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.colors.depth.level0,
-          paddingHorizontal: theme.spacing.containerMargin,
-        },
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: theme.colors.depth.level0 }]}>
       <Text
         style={[
           toTextStyle(theme.typography.headlineLgMobile),
-          { color: theme.colors.primary.default },
+          { color: theme.colors.text.primary },
         ]}
       >
-        Hello, World!
-      </Text>
-      <Text
-        style={[
-          toTextStyle(theme.typography.bodyMd),
-          { color: theme.colors.text.secondary },
-        ]}
-      >
-        Welcome to StyleQuest
+        Feed
       </Text>
     </View>
   );
@@ -44,8 +28,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
   },
 });
 
-export default HelloWorldScreen;
+export default FeedScreen;

@@ -25,6 +25,12 @@ module.exports = {
         gamification: {
           emerald: "#4EDEA3",
         },
+        nav: {
+          surface: "#1F1F25",
+          border: "#4A4455",
+          inactive: "#CCC3D8",
+          active: "#D2BBFF",
+        },
       },
       fontFamily: {
         sans: ["Inter", "System"],

@@ -1,30 +1,36 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { AppTabParamList } from "./types";
-import HelloWorldScreen from "../screens/HelloWorldScreen";
+import { MidnightEdgeTabBar } from "../components/layout";
+import HomeScreen from "../screens/HomeScreen";
+import DiscoverScreen from "../screens/DiscoverScreen";
+import BookScreen from "../screens/BookScreen";
+import FeedScreen from "../screens/FeedScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
-
-// ─── Placeholder Screen Shells ────────────────────────────────────────────────
-// Feature implementation is deferred. Each shell returns null intentionally.
-
-const FeedScreen = HelloWorldScreen;
-const BookingScreen = (): null => null; /* Feature Screen Shell */
-const JourneyScreen = (): null => null; /* Feature Screen Shell */
-const SettingsScreen = (): null => null; /* Feature Screen Shell */
-
-// ─── Navigator ────────────────────────────────────────────────────────────────
 
 const AppNavigator: React.FC = () => {
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false }}
-      initialRouteName="Feed"
+      tabBar={(props) => <MidnightEdgeTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          position: "absolute",
+          backgroundColor: "transparent",
+          borderTopWidth: 0,
+          elevation: 0,
+        },
+        sceneStyle: { backgroundColor: "transparent" },
+      }}
+      initialRouteName="Discover"
     >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Discover" component={DiscoverScreen} />
+      <Tab.Screen name="Book" component={BookScreen} />
       <Tab.Screen name="Feed" component={FeedScreen} />
-      <Tab.Screen name="Booking" component={BookingScreen} />
-      <Tab.Screen name="Journey" component={JourneyScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

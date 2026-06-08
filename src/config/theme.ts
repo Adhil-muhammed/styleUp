@@ -77,6 +77,14 @@ export interface ColorPalette {
     warning: string;
     error: string;
   };
+  nav: {
+    surface: string;
+    surfaceScrim: string;
+    border: string;
+    inactive: string;
+    active: string;
+    iconGlow: string;
+  };
   /** @deprecated Use colors.depth.level0 */
   background: string;
   /** @deprecated Use colors.depth.level1 */
@@ -184,6 +192,14 @@ export const midnightEdgeTokens = {
       success: "#4EDEA3",
       warning: "#FFB95F",
       error: "#F87171",
+    },
+    nav: {
+      surface: "#1F1F25",
+      surfaceScrim: "rgba(31, 31, 37, 0.9)",
+      border: "#4A4455",
+      inactive: "#CCC3D8",
+      active: "#D2BBFF",
+      iconGlow: "rgba(124, 58, 237, 0.5)",
     },
   },
   typography: {
@@ -299,6 +315,7 @@ export const midnightEdgeTheme: Theme = {
     glass: { ...c.glass },
     text: { ...c.text },
     semantic: { ...c.semantic },
+    nav: { ...c.nav },
     background: c.depth.level0,
     surface: c.depth.level1,
     surfaceElevated: c.depth.level2,
@@ -363,4 +380,9 @@ export function focusGlowStyle(theme: Theme): Pick<
     shadowOpacity: 1,
     shadowRadius: 4,
   };
+}
+
+/** HTML nav surface scrim — surface-container @ 90%. */
+export function navSurfaceStyle(theme: Theme): Pick<ViewStyle, "backgroundColor"> {
+  return { backgroundColor: theme.colors.nav.surfaceScrim };
 }
