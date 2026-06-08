@@ -2,6 +2,13 @@
   "expo": {
     "name": "StyleQuest",
     "slug": "StyleQuest",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "userInterfaceStyle": "automatic",
+    "platforms": ["ios", "android", "web"],
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./src/assets/images/favicon.png"
+    }
   }
 }
