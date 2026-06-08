@@ -1,0 +1,138 @@
+---
+description: "Enforces the Midnight Edge near-black color tokens, tonal depth stacking, and interactive focus states."
+globs: ["src/components/**/*.tsx", "src/screens/**/*.tsx", "src/ui/**/*.tsx"]
+alwaysApply: false
+---
+
+# Midnight Edge — Colors & Depth
+
+All UI surfaces must use tokens from [`src/config/theme.ts`](src/config/theme.ts). Do not hardcode hex values that exist in the theme.
+
+## Depth Layering — No Drop Shadows
+
+Standard drop-shadow elevations are **forbidden**. Depth is communicated exclusively through tonal shifts across three floor levels.
+
+| Level | Token | Hex | Usage |
+|-------|-------|-----|-------|
+| Level 0 | `colors.depth.level0` | `#0A0A0F` | Base floor, screen backgrounds |
+| Level 1 | `colors.depth.level1` | `#111118` | Cards, list rows, inset panels |
+| Level 2 | `colors.depth.level2` | `#1A1A24` | Modals, sheets, overlays |
+| Alt bg | `colors.depth.background` | `#131318` | Secondary base floor variant |
+
+Level 1 surfaces must use `colors.border.level1` (`#2A2A3A`) for borders — never lighter grays.
+
+Do not use `elevation`, `shadowColor`, `shadowOffset`, or CSS `box-shadow` to simulate depth on static surfaces.
+
+```tsx
+// BAD — generic white card with drop shadow elevation
+<View
+  style={{
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  }}
+>
+  <Text>Service Provider</Text>
+</View>
+
+// GOOD — Midnight Edge tonal depth stacking
+import { useTheme } from "@/hooks/useTheme";
+
+const ProviderCard = (): React.JSX.Element => {
+  const { theme } = useTheme();
+
+  return (
+    <View
+      style={{
+        backgroundColor: theme.colors.depth.level1,
+        borderColor: theme.colors.border.level1,
+        borderWidth: 1,
+        borderRadius: theme.borderRadius.md,
+        padding: theme.spacing.stackMd,
+      }}
+    >
+      <Text style={{ color: theme.colors.text.primary }}>Service Provider</Text>
+    </View>
+  );
+};
+```
+
+## Level 2 Glassmorphism
+
+Components targeting Level 2 overlays (modals, bottom sheets, floating panels) must apply glassmorphism:
+
+- Background: `colors.depth.level2` (`#1A1A24`) over `expo-blur` with `intensity` matching `theme.glassmorphism.blur` (20)
+- Border: `colors.glass.border` — primary violet at 15% opacity (`rgba(124, 58, 237, 0.15)`)
+
+```tsx
+// GOOD — Level 2 glass overlay
+import { BlurView } from "expo-blur";
+import { useTheme } from "@/hooks/useTheme";
+
+const ModalOverlay = ({ children }: { children: React.ReactNode }): React.JSX.Element => {
+  const { theme } = useTheme();
+
+  return (
+    <BlurView
+      intensity={theme.glassmorphism.blur}
+      tint="dark"
+      style={{
+        backgroundColor: theme.colors.depth.level2,
+        borderColor: theme.colors.glass.border,
+        borderWidth: 1,
+        borderRadius: theme.borderRadius.lg,
+      }}
+    >
+      {children}
+    </BlurView>
+  );
+};
+```
+
+## Interactive Focus Glow
+
+Focused interactive inputs and containers must receive a 4px outer glow using the Primary Violet focus token at 40% opacity.
+
+Use `focusGlowStyle(theme)` from `@/config/theme` — do not hardcode glow values.
+
+```tsx
+// BAD — hardcoded focus ring
+<TextInput style={{ borderColor: "#7C3AED", borderWidth: 2 }} />
+
+// GOOD — token-driven focus glow
+import { focusGlowStyle } from "@/config/theme";
+import { useTheme } from "@/hooks/useTheme";
+
+const SearchInput = (): React.JSX.Element => {
+  const { theme } = useTheme();
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <TextInput
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={[
+        {
+          backgroundColor: theme.colors.depth.level1,
+          borderColor: theme.colors.border.level1,
+          borderWidth: 1,
+          borderRadius: theme.borderRadius.md,
+          color: theme.colors.text.primary,
+        },
+        focused && focusGlowStyle(theme),
+      ]}
+    />
+  );
+};
+```
+
+## Identity Palette Reference
+
+- Primary: `colors.primary.default` (`#7C3AED`), dim: `colors.primary.dim` (`#D2BBFF`)
+- Accent amber: `colors.accent.amber` (`#FFB95F`)
+- Gamification emerald: `colors.gamification.emerald` (`#4EDEA3`)
+- Premium gradient: `colors.gradient.premium` (`#7C3AED` → `#EC4899`) via `expo-linear-gradient`

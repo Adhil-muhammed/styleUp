@@ -1,0 +1,181 @@
+---
+description: "Asynchronous networking standards, error boundary handling, and global state lifecycle configurations."
+globs: ["src/store/**/*.ts", "src/services/**/*.ts"]
+alwaysApply: false
+---
+
+# State & Data Layer Standards
+
+These rules govern Zustand stores in `src/store/` and service modules in `src/services/`.
+
+## Zustand Store Structure
+
+Maintain **one store file per domain slice**. Do not create monolithic god-stores.
+
+Each store file must contain:
+
+1. A `State` interface for read-only fields.
+2. An `Actions` interface for mutations (kept non-exported when internal).
+3. A combined store type: `type XStore = XStoreState & XStoreActions`.
+4. An exported hook: `useXStore` created via `create<XStore>()`.
+
+```typescript
+// BAD — mixed concerns in one store
+export const useAppStore = create(() => ({
+  user: null,
+  theme: "light",
+  bookings: [],
+  setUser: () => {},
+  setTheme: () => {},
+  fetchBookings: async () => {},
+}));
+
+// GOOD — isolated auth slice (pattern from src/store/authStore.ts)
+export interface AuthStoreState {
+  user: User | null;
+  accessToken: string | null;
+  isAuthenticated: boolean;
+  isHydrated: boolean;
+}
+
+interface AuthStoreActions {
+  setAuth: (user: User, tokens: AuthTokenPair) => void;
+  clearAuth: () => void;
+  setHydrated: (hydrated: boolean) => void;
+}
+
+export type AuthStore = AuthStoreState & AuthStoreActions;
+
+export const useAuthStore = create<AuthStore>()(/* ... */);
+```
+
+Stores must not import React, render UI, or call navigation directly.
+
+## Persist & Hydration Pattern
+
+Persisted stores must follow the hydration contract established in `src/store/authStore.ts`.
+
+- Expose an `isHydrated: boolean` flag that starts as `false`.
+- Use `partialize` to exclude runtime-only fields (`isHydrated`) from persistence.
+- Set `isHydrated` to `true` in the `onRehydrateStorage` callback after AsyncStorage read completes.
+- Use `STORAGE_KEYS` from `src/config/constants.ts` for persist `name` values — never inline storage key strings.
+- Ephemeral stores (e.g., `uiStore`) must not use persist middleware unless explicitly required.
+
+```typescript
+// BAD — no hydration flag, consumers cannot gate on rehydration
+export const useAuthStore = create(
+  persist(
+    (set) => ({ user: null, setUser: (u) => set({ user: u }) }),
+    { name: "auth" },
+  ),
+);
+
+// GOOD — hydration-aware persist
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      ...initialState,
+      setHydrated: (hydrated: boolean) => set({ isHydrated: hydrated }),
+    }),
+    {
+      name: STORAGE_KEYS.AUTH_TOKEN,
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state): Omit<AuthStoreState, "isHydrated"> => ({
+        user: state.user,
+        accessToken: state.accessToken,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      onRehydrateStorage: () => (rehydratedState, error) => {
+        if (error) {
+          console.error("[StyleQuest] Auth store rehydration error:", error);
+        }
+        rehydratedState?.setHydrated(true);
+      },
+    },
+  ),
+);
+```
+
+Components that depend on persisted auth state must wait for `isHydrated` before routing decisions (via `useAuth` hook).
+
+## Centralized API Client
+
+All HTTP traffic must flow through `src/services/api/client.ts`.
+
+- Use the exported typed helpers: `get`, `post`, `put`, `del`.
+- Do not call `fetch()` directly anywhere in the codebase.
+- Do not create additional `axios.create()` instances in stores, hooks, or components.
+- Domain-specific API functions belong in `src/services/` submodules (e.g., `src/services/booking/api.ts`) and must import helpers from `client.ts`.
+
+```typescript
+// BAD — scattered axios in a store
+import axios from "axios";
+
+const fetchProfile = async () => {
+  const res = await axios.get("https://api.stylequest.app/v1/profile");
+  return res.data;
+};
+
+// BAD — raw fetch in a service
+export async function getBookings() {
+  const res = await fetch(`${API_BASE_URL}/bookings`);
+  return res.json();
+}
+
+// GOOD — service module delegates to centralized client
+import { get } from "@/services/api/client";
+import type { Booking } from "@/types";
+
+export async function getBookings(): Promise<Booking[]> {
+  return get<Booking[]>("/bookings");
+}
+```
+
+Request and response interceptors in `client.ts` handle token injection and 401 logout — do not duplicate this logic in individual API calls.
+
+## Global Error Normalization
+
+Every network failure must be caught and normalized before reaching UI layers.
+
+- The response interceptor in `client.ts` maps Axios errors to the typed `ApiError` shape: `{ code, message, statusCode, details? }`.
+- Never expose raw backend stack traces, internal error codes, or `error.stack` strings to end-user interfaces.
+- Service functions must let normalized `ApiError` rejections propagate — do not swallow errors silently.
+- Callers (hooks, stores) catch `ApiError` and map to user-safe display messages.
+
+```typescript
+// BAD — leaks backend internals to UI
+catch (error) {
+  Alert.alert("Error", (error as AxiosError).response?.data?.stack);
+}
+
+// BAD — empty catch silences failures
+catch (error) {
+  // ignore
+}
+
+// GOOD — handle normalized ApiError with a safe message
+import type { ApiError } from "@/types";
+
+try {
+  await getBookings();
+} catch (error) {
+  const apiError = error as ApiError;
+  setErrorMessage(apiError.message); // already user-safe from interceptor
+}
+```
+
+Interceptor error mapping must respect `exactOptionalPropertyTypes` — only include `details` when defined (see existing pattern in `client.ts`).
+
+## 401 Unauthorized Handling
+
+Token invalidation on 401 responses is handled **once** in the Axios response interceptor via `useAuthStore.getState().clearAuth()`.
+
+- Do not add per-endpoint 401 handling in service functions or stores.
+- Use lazy `require()` for store access inside interceptors to avoid circular imports — follow the existing pattern in `client.ts`.
+
+## Service Module Conventions
+
+- Services export async functions with explicit return types — no implicit `Promise<any>`.
+- Services accept typed request bodies and return typed domain models from `src/types/`.
+- Services must not depend on React hooks or component lifecycle.
+- Storage helpers (`src/services/storage/`) and analytics (`src/services/analytics/`) follow the same purity rules — no UI side effects.

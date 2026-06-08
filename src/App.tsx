@@ -2,6 +2,13 @@ import "../global.css"; // NativeWind — must be imported at the application ro
 import React, { createContext, useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+} from "@expo-google-fonts/inter";
 import { useTheme } from "./hooks/useTheme";
 import RootNavigator from "./navigation/RootNavigator";
 import type { Theme, AppTheme } from "./config/theme";
@@ -37,11 +44,6 @@ interface ThemeProviderProps {
   children: React.ReactNode;
 }
 
-/**
- * Bridges the Zustand UI store theme preference into React Context,
- * making the active theme available to the entire component tree without
- * direct Zustand coupling at every consumption site.
- */
 const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const themeValue = useTheme();
 
@@ -59,6 +61,17 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 //         RootNavigator       — auth-gated navigation tree
 
 const App: React.FC = () => {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>

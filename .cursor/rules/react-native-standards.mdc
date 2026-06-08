@@ -1,0 +1,198 @@
+---
+description: "Coding standards and UI layout constraints specifically optimized for React Native functional components."
+globs: ["src/components/**/*.tsx", "src/components/**/*.ts"]
+alwaysApply: false
+---
+
+# React Native Component Standards
+
+These rules apply to reusable UI building blocks in `src/components/`.
+
+## Component Shape
+
+Components must be **functional components** written as **named arrow functions** with an **explicit return type**.
+
+- Use `React.JSX.Element` (or `React.ReactElement`) as the return type.
+- Define a dedicated `Props` interface (or type alias) for every component that accepts props.
+- Export the component as the default export or a named export — never as an anonymous default.
+- Class components are forbidden.
+
+```typescript
+// BAD — no return type, inline props, anonymous default
+export default ({ title }: { title: string }) => {
+  return <Text>{title}</Text>;
+};
+
+// BAD — class component
+export class PrimaryButton extends React.Component {
+  render() {
+    return <Pressable />;
+  }
+}
+
+// GOOD — explicit typing, named arrow function
+import React from "react";
+import { Pressable, Text, StyleSheet } from "react-native";
+
+interface PrimaryButtonProps {
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+}
+
+const PrimaryButton = ({
+  label,
+  onPress,
+  disabled = false,
+}: PrimaryButtonProps): React.JSX.Element => {
+  return (
+    <Pressable onPress={onPress} disabled={disabled} style={styles.button}>
+      <Text style={styles.label}>{label}</Text>
+    </Pressable>
+  );
+};
+
+const styles = StyleSheet.create({
+  button: { paddingVertical: 12, paddingHorizontal: 24, borderRadius: 8 },
+  label: { fontSize: 16, fontWeight: "600" },
+});
+
+export default PrimaryButton;
+```
+
+## Safe Area Layout
+
+The application root wraps the tree in `SafeAreaProvider` (see `src/App.tsx`). Components that render edge-to-edge content must respect device insets.
+
+- Use `useSafeAreaInsets()` from `react-native-safe-area-context` for custom padding on headers, footers, and floating elements.
+- Use `SafeAreaView` from `react-native-safe-area-context` (not the deprecated RN core export) for full-screen containers.
+- Never hardcode notch, status bar, or home-indicator offsets (e.g., `paddingTop: 44`).
+
+```typescript
+// BAD — magic number for notch clearance
+const ScreenHeader = (): React.JSX.Element => (
+  <View style={{ paddingTop: 44 }}>
+    <Text>Title</Text>
+  </View>
+);
+
+// GOOD — dynamic insets from the provider
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+interface ScreenHeaderProps {
+  title: string;
+}
+
+const ScreenHeader = ({ title }: ScreenHeaderProps): React.JSX.Element => {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View style={{ paddingTop: insets.top, paddingHorizontal: 16 }}>
+      <Text>{title}</Text>
+    </View>
+  );
+};
+```
+
+Provider order at the app root must remain: `SafeAreaProvider` → `ThemeProvider` → `NavigationContainer`.
+
+## Performance — Memoization Requirements
+
+Apply memoization where re-renders carry measurable cost.
+
+- Wrap **list item components** in `React.memo`.
+- Use `useMemo` for expensive derived values (filtered lists, computed totals, merged styles from theme tokens).
+- Use `useCallback` for handlers passed to memoized children, `FlatList`/`SectionList` `renderItem`, or `keyExtractor`.
+- Do not pass inline object or array literals as props to memoized children — they defeat referential equality.
+
+```typescript
+// BAD — new function and object on every parent render
+const ParentList = ({ items }: ParentListProps): React.JSX.Element => {
+  return (
+    <FlatList
+      data={items}
+      renderItem={({ item }) => <ItemRow item={item} onPress={() => handlePress(item.id)} />}
+      contentContainerStyle={{ padding: 16 }}
+    />
+  );
+};
+
+// GOOD — stable callbacks and memoized child
+const ItemRow = React.memo(({ item, onPress }: ItemRowProps): React.JSX.Element => (
+  <Pressable onPress={onPress}>
+    <Text>{item.title}</Text>
+  </Pressable>
+));
+
+const ParentList = ({ items }: ParentListProps): React.JSX.Element => {
+  const handlePress = useCallback((id: string) => {
+    // navigate or dispatch
+  }, []);
+
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<Item>) => (
+      <ItemRow item={item} onPress={() => handlePress(item.id)} />
+    ),
+    [handlePress],
+  );
+
+  const contentStyle = useMemo(() => ({ padding: 16 }), []);
+
+  return (
+    <FlatList
+      data={items}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={contentStyle}
+    />
+  );
+};
+```
+
+## Props Typing — Good vs Bad
+
+```typescript
+// BAD — untyped rest spread, optional props without defaults documented
+const Avatar = (props) => {
+  const { uri, size } = props;
+  return <Image source={{ uri }} style={{ width: size, height: size }} />;
+};
+
+// BAD — React.FC without explicit Props interface
+const Avatar: React.FC = ({ uri, size = 40 }) => { /* ... */ };
+
+// GOOD — dedicated interface, explicit return type, typed StyleSheet
+import type { ImageSourcePropType, ImageStyle } from "react-native";
+
+interface AvatarProps {
+  uri: string;
+  size?: number;
+  style?: ImageStyle;
+}
+
+const Avatar = ({
+  uri,
+  size = 40,
+  style,
+}: AvatarProps): React.JSX.Element => {
+  const source: ImageSourcePropType = { uri };
+
+  return (
+    <Image
+      source={source}
+      style={[styles.base, { width: size, height: size }, style]}
+    />
+  );
+};
+
+const styles = StyleSheet.create({
+  base: { borderRadius: 999 },
+});
+```
+
+## Styling Conventions
+
+- NativeWind utility classes are available project-wide via `global.css` imported in `src/App.tsx`.
+- `StyleSheet.create` is acceptable and preferred for complex or theme-driven styles.
+- Pull all color, spacing, typography, and radius tokens from `useTheme()` or `useThemeContext()` using the **Midnight Edge** design system in `src/config/theme.ts` — use `toTextStyle()` for typography. Do not hardcode hex values or font sizes. See `theme-colors-and-depth.mdc`, `theme-typography-and-layout.mdc`, and `theme-component-and-motion.mdc`.
+- Style props must be typed (`ViewStyle`, `TextStyle`, `ImageStyle`) — never untyped style objects.

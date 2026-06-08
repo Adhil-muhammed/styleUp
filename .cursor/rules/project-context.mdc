@@ -1,0 +1,130 @@
+---
+description: "Global technical stack context, code quality expectations, and file structural constraints for the mobile application."
+alwaysApply: true
+---
+
+# StyleQuest — Project Context
+
+## Environment Baseline
+
+This is a **React Native** mobile application built on **Expo SDK 56**, **React 19**, and **TypeScript strict mode**.
+
+Before writing or modifying platform-specific code, read the versioned Expo documentation at https://docs.expo.dev/versions/v56.0.0/.
+
+Core dependencies and paradigms:
+
+- **Navigation**: React Navigation v7 (`@react-navigation/native`, native-stack, bottom-tabs)
+- **State**: Zustand v5 with optional persist middleware
+- **Networking**: Centralized Axios client in `src/services/api/client.ts`
+- **Styling**: NativeWind v4 (Tailwind) at app root; `StyleSheet.create` acceptable in components. All UI must consume **Midnight Edge** tokens from `src/config/theme.ts` — see `theme-*.mdc` rules for color, typography, and component standards.
+- **Safe area**: `react-native-safe-area-context` — provider mounted in `src/App.tsx`
+- **Lists**: `@shopify/flash-list` for high-performance virtualized lists
+- **Animations**: `react-native-reanimated` v3+ (UI-thread worklets) + `react-native-gesture-handler` (object-based `Gesture.*` API)
+- **Testing**: Jest + `jest-expo` + `@testing-library/react-native` — config in `jest.config.js`, mocks in `jest.setup.ts`
+- **Path alias**: `@/*` maps to `src/*` — prefer `@/` over deep relative imports
+
+Run `npm run typescript` after substantive TypeScript changes. Run `npm run lint` before finishing work in `src/`.
+
+## TypeScript — Zero `any` Policy
+
+The `any` type is **forbidden** across the entire codebase.
+
+- Do not declare variables, parameters, return types, or generics as `any`.
+- Do not use `as any` to bypass the compiler.
+- Do not cast `unknown` without narrowing via type guards, `in` checks, or schema validation.
+- When a type is genuinely unknown at compile time, use `unknown` and narrow before use.
+
+```typescript
+// BAD — bypasses the type system
+function parsePayload(raw: any): User {
+  return raw as User;
+}
+
+// GOOD — narrow before use
+function parsePayload(raw: unknown): User {
+  if (
+    typeof raw === "object" &&
+    raw !== null &&
+    "id" in raw &&
+    typeof (raw as Record<string, unknown>).id === "string"
+  ) {
+    return raw as User;
+  }
+  throw new Error("Invalid user payload");
+}
+```
+
+Compiler options in `tsconfig.json` (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`) are non-negotiable. Do not weaken them.
+
+## File Casing Policy
+
+| Artifact | Casing | Example |
+|----------|--------|---------|
+| React components & screens | `PascalCase.tsx` | `HelloWorldScreen.tsx`, `ThemeProvider.tsx` |
+| Custom hooks | `camelCase.ts` | `useAuth.ts`, `useDebounce.ts` |
+| Utilities & services | `camelCase.ts` | `formatters.ts`, `client.ts` |
+| Global constants | `SCREAMING_SNAKE_CASE` | `API_BASE_URL`, `STORAGE_KEYS` |
+
+```typescript
+// BAD — inconsistent constant naming
+export const apiBaseUrl = "https://api.stylequest.app/v1";
+export const storageKeys = { authToken: "@stylequest/auth_token" };
+
+// GOOD — matches src/config/constants.ts conventions
+export const API_BASE_URL = "https://api.stylequest.app/v1";
+
+export const STORAGE_KEYS = {
+  AUTH_TOKEN: "@stylequest/auth_token",
+  USER_PROFILE: "@stylequest/user_profile",
+} as const;
+```
+
+## Modularity & Layer Boundaries
+
+Every function and module must be **abstract, self-contained, and modular**.
+
+- Assign **one responsibility** per file. Split when a module grows beyond a single concern.
+- **Components** (`src/components/`, `src/screens/`) must not import Axios, `fetch`, or Zustand stores directly — consume data through hooks (`src/hooks/`) or service modules (`src/services/`).
+- **Stores** (`src/store/`) must not render UI or import React components.
+- **Services** (`src/services/`) must not depend on React hooks or component lifecycle.
+- **Navigation** (`src/navigation/`) must not contain business logic — delegate to hooks, stores, or services.
+- Export named interfaces and types alongside implementations. Avoid default-exporting untyped objects.
+
+```typescript
+// BAD — component reaches into the data layer
+import axios from "axios";
+import { useAuthStore } from "@/store/authStore";
+
+const ProfileHeader = () => {
+  const token = useAuthStore((s) => s.accessToken);
+  // ...
+};
+
+// GOOD — component consumes a hook abstraction
+import { useAuth } from "@/hooks/useAuth";
+
+const ProfileHeader = (): React.JSX.Element => {
+  const { user } = useAuth();
+  // ...
+};
+```
+
+## Directory Structure
+
+Respect the established layout:
+
+```
+src/
+├── App.tsx              # Root providers (SafeAreaProvider, NavigationContainer)
+├── components/          # Reusable UI building blocks
+├── screens/             # Route-bound screen components
+├── navigation/          # Navigators and param list types
+├── hooks/               # Custom React hooks
+├── store/               # Zustand slices
+├── services/            # API client, storage, analytics
+├── config/              # Theme, env, constants
+├── types/               # Shared domain & API types
+└── utils/               # Pure utility functions
+```
+
+Do not create parallel folder hierarchies or relocate modules without explicit instruction.

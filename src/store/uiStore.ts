@@ -25,7 +25,7 @@ export const useUIStore = create<UIStore>()((set) => ({
   // State
   isAppLoading: false,
   activeModal: null,
-  themePreference: "light",
+  themePreference: "midnight",
 
   // Actions
   setAppLoading: (loading: boolean) => set({ isAppLoading: loading }),

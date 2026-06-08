@@ -1,0 +1,168 @@
+---
+description: "Enforces component interaction styles, shape behaviors, thin-stroke iconography, and physics-driven animations."
+globs: ["src/components/**/*.tsx", "src/ui/**/*.tsx", "src/hooks/**/*Animation*.ts"]
+alwaysApply: false
+---
+
+# Midnight Edge — Components & Motion
+
+Component shapes, interaction states, and animations must align with Midnight Edge tokens in [`src/config/theme.ts`](src/config/theme.ts).
+
+## Button Specifications
+
+Primary buttons:
+
+- Fill: `colors.primary.default` (`#7C3AED`)
+- Active/pressed: `colors.primary.active` (`#6D28D9`)
+- Shape: `borderRadius.full` (pill)
+
+Form inputs:
+
+- Shape: `borderRadius.md` (12px sharp corners)
+- Background: `colors.depth.level1`
+- Border: `colors.border.level1`
+
+Gamified badges (XP, level, streak):
+
+- Shape: `borderRadius.full` (pill)
+
+```tsx
+// BAD — square corners, hardcoded colors, timing animation
+<Pressable
+  style={{ backgroundColor: "#7C3AED", borderRadius: 4, padding: 12 }}
+  onPress={onPress}
+>
+  <Text style={{ color: "#fff" }}>Book Now</Text>
+</Pressable>
+
+// GOOD — Midnight Edge primary pill button
+import { useTheme } from "@/hooks/useTheme";
+import { toTextStyle } from "@/config/theme";
+
+const PrimaryButton = ({ label, onPress }: PrimaryButtonProps): React.JSX.Element => {
+  const { theme } = useTheme();
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      style={{
+        backgroundColor: pressed
+          ? theme.colors.primary.active
+          : theme.colors.primary.default,
+        borderRadius: theme.borderRadius.full,
+        paddingHorizontal: theme.spacing.stackLg,
+        paddingVertical: theme.spacing.stackMd,
+      }}
+    >
+      <Text style={[toTextStyle(theme.typography.labelMd), { color: theme.colors.text.onPrimary }]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+};
+```
+
+## Spring Physics Animations
+
+All layout and element transitions must use Reanimated `withSpring` configured from `theme.motion.spring`:
+
+- Stiffness: `300`
+- Damping: `20`
+
+Do not use `Animated.timing`, `LayoutAnimation`, or `withTiming` for interactive transitions.
+
+```tsx
+// BAD — timing-based layout animation
+Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+
+// GOOD — spring physics from theme tokens
+import { useSharedValue, withSpring, useAnimatedStyle } from "react-native-reanimated";
+import { useTheme } from "@/hooks/useTheme";
+
+const useMidnightSpring = () => {
+  const { theme } = useTheme();
+  return {
+    stiffness: theme.motion.spring.stiffness,
+    damping: theme.motion.spring.damping,
+  };
+};
+
+// In component:
+const spring = useMidnightSpring();
+progress.value = withSpring(1, { stiffness: spring.stiffness, damping: spring.damping });
+```
+
+Align with [mobile-animations skill](.cursor/skills/mobile-animations/SKILL.md) for UI-thread worklet rules.
+
+## Skeleton Loading States
+
+Skeleton screens must shimmer with a diagonal gradient animating across a dark base layer:
+
+- Base color: `theme.motion.skeletonBase` (`#1A1A24` — same as `colors.depth.level2`)
+- Animate gradient sweep via Reanimated — not opacity pulsing on a gray block
+
+```tsx
+// BAD — flat gray placeholder block
+<View style={{ width: "100%", height: 16, backgroundColor: "#333", borderRadius: 4 }} />
+
+// GOOD — skeleton base from theme token
+<View
+  style={{
+    width: "100%",
+    height: 16,
+    backgroundColor: theme.motion.skeletonBase,
+    borderRadius: theme.borderRadius.sm,
+    overflow: "hidden",
+  }}
+>
+  {/* Reanimated diagonal shimmer gradient overlay */}
+</View>
+```
+
+## Iconography — 1.5pt Thin Stroke
+
+All interface icons must use `theme.icon.strokeWidth` (1.5pt) thin-stroke line icons.
+
+Active/selected icons must project a subtle glow matching their active color state:
+
+```tsx
+// GOOD — active icon with color-matched glow
+<Icon
+  size={24}
+  strokeWidth={theme.icon.strokeWidth}
+  color={isActive ? theme.colors.primary.default : theme.colors.text.secondary}
+  style={
+    isActive
+      ? {
+          shadowColor: theme.colors.primary.default,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.5,
+          shadowRadius: 6,
+        }
+      : undefined
+  }
+/>
+```
+
+## Premium Milestone Gradient
+
+High-tier ranking badges and premium milestones must use the dual-color linear gradient:
+
+- Start: `#7C3AED` — End: `#EC4899`
+- Source: `colors.gradient.premium` via `expo-linear-gradient`
+
+```tsx
+import { LinearGradient } from "expo-linear-gradient";
+
+<LinearGradient
+  colors={[theme.colors.gradient.premium[0], theme.colors.gradient.premium[1]]}
+  start={{ x: 0, y: 0 }}
+  end={{ x: 1, y: 0 }}
+  style={{ borderRadius: theme.borderRadius.full, padding: theme.spacing.stackSm }}
+>
+  {/* badge content */}
+</LinearGradient>
+```

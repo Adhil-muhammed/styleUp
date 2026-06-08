@@ -1,3 +1,45 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Midnight Edge — depth floors */
+    --depth-0: #0a0a0f;
+    --depth-1: #111118;
+    --depth-2: #1a1a24;
+    --depth-bg: #131318;
+
+    /* Borders */
+    --border-level1: #2a2a3a;
+
+    /* Core identity */
+    --primary: #7c3aed;
+    --primary-dim: #d2bbff;
+    --primary-active: #6d28d9;
+    --accent-amber: #ffb95f;
+    --gamification-emerald: #4edea3;
+
+    /* Premium gradient endpoints */
+    --gradient-premium-start: #7c3aed;
+    --gradient-premium-end: #ec4899;
+
+    /* Interactive states */
+    --focus-glow: rgba(124, 58, 237, 0.4);
+    --glass-border: rgba(124, 58, 237, 0.15);
+
+    /* Typography */
+    --font-sans: Inter, system-ui, sans-serif;
+
+    /* Layout */
+    --container-margin: 20px;
+    --gutter: 16px;
+    --stack-sm: 8px;
+    --stack-md: 16px;
+    --stack-lg: 24px;
+    --section-gap: 40px;
+
+    /* Motion / skeleton */
+    --skeleton-base: #1a1a24;
+  }
+}

@@ -1,0 +1,154 @@
+---
+description: "Type-safety protocols, nesting conventions, and parameters mapping guidelines for React Navigation."
+globs: ["src/navigation/**/*.tsx", "src/navigation/**/*.ts"]
+alwaysApply: false
+---
+
+# Navigation & Routing Standards
+
+These rules govern all files in `src/navigation/`. React Navigation v7 is the sole routing library.
+
+## Param List Typing
+
+Every navigator must be created with an explicit generic param list type. All param lists must be defined in `src/navigation/types.ts`.
+
+- Declare separate param lists per navigator: `RootStackParamList`, `AuthStackParamList`, `AppTabParamList`.
+- Use `undefined` for screens that accept no params — do not use `{}` or omit the key.
+- Augment `ReactNavigation.RootParamList` globally so `useNavigation()` is typed at the root level.
+- Export typed screen prop helpers: `RootStackScreenProps`, `AuthStackScreenProps`, `AppTabScreenProps`.
+
+```typescript
+// BAD — untyped navigator, params inferred as any
+const Stack = createNativeStackNavigator();
+
+// BAD — param list defined inline in the navigator file
+type LocalParams = { Home: { user: User } };
+const Stack = createNativeStackNavigator<LocalParams>();
+
+// GOOD — centralized types in src/navigation/types.ts
+export type RootStackParamList = {
+  Auth: undefined;
+  App: undefined;
+  Modal: { modalType: ModalType };
+};
+
+export type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  OTP: { phoneNumber: string };
+};
+
+// GOOD — typed navigator factory
+const Stack = createNativeStackNavigator<AuthStackParamList>();
+```
+
+Screens outside this directory must consume typed props:
+
+```typescript
+import type { AppTabScreenProps } from "@/navigation/types";
+
+type Props = AppTabScreenProps<"Feed">;
+
+const FeedScreen = (_props: Props): React.JSX.Element => {
+  // ...
+};
+```
+
+## Auth / App Flow Isolation
+
+Authentication and authenticated application flows must remain **totally isolated**.
+
+- `AuthNavigator` owns only auth screens (`Login`, `Register`, `OTP`).
+- `AppNavigator` owns only post-auth screens (tab stacks: `Feed`, `Booking`, `Journey`, `Settings`).
+- `RootNavigator` gates between `Auth` and `App` stacks — never mix auth screens into the tab navigator or app screens into the auth stack.
+- Do not conditionally render individual auth screens inside `AppNavigator` or vice versa.
+
+```typescript
+// BAD — auth screen registered inside the app tab navigator
+<Tab.Screen name="Login" component={LoginScreen} />
+
+// BAD — business screen inside auth stack
+<Stack.Screen name="Feed" component={FeedScreen} />
+
+// GOOD — root-level gate, separate navigators
+<Stack.Navigator screenOptions={{ headerShown: false }}>
+  {isAuthenticated ? (
+    <Stack.Screen name="App" component={AppNavigator} />
+  ) : (
+    <Stack.Screen name="Auth" component={AuthNavigator} />
+  )}
+</Stack.Navigator>
+```
+
+## Navigation Params — Minimal Payloads
+
+Navigation params are for **routing context only**, not data transport.
+
+- Params must be JSON-serializable: strings, numbers, booleans, enums, and small record IDs.
+- Do not pass full domain entities, arrays of objects, nested graphs, or callback functions through `navigation.navigate`.
+- For complex or shared data, read from Zustand stores or fetch by ID in the destination screen via a service call.
+- Keep param interfaces narrow — prefer a single ID field over duplicating entity shape.
+
+```typescript
+// BAD — dumps entire entity through navigation
+navigation.navigate("Booking", {
+  booking: {
+    id: "bk_123",
+    salon: { id: "s_1", name: "Studio", services: [...] },
+    stylist: { /* ... */ },
+  },
+});
+
+// BAD — non-serializable callback
+navigation.navigate("Modal", { onConfirm: () => submitForm() });
+
+// GOOD — pass a record ID, resolve data at destination
+navigation.navigate("Booking", { bookingId: "bk_123" });
+
+// In BookingScreen:
+const { bookingId } = route.params;
+const booking = useBooking(bookingId); // hook fetches from store or API
+```
+
+Param list definitions must reflect this constraint:
+
+```typescript
+// BAD
+export type AppTabParamList = {
+  Booking: { booking: BookingEntity };
+};
+
+// GOOD
+export type AppTabParamList = {
+  Feed: undefined;
+  Booking: { bookingId: string } | undefined;
+  Journey: undefined;
+  Settings: undefined;
+};
+```
+
+## Navigator File Conventions
+
+- One navigator per file: `RootNavigator.tsx`, `AuthNavigator.tsx`, `AppNavigator.tsx`.
+- Navigators must not contain business logic, API calls, or Zustand mutations — only routing structure and screen registration.
+- Use `screenOptions` at the navigator level for shared config; override per-screen only when necessary.
+- Placeholder screen shells are acceptable during scaffolding but must be replaced with typed screen imports from `src/screens/`.
+
+## Type-Safe Navigation Calls
+
+Use typed navigation hooks — never cast navigation objects.
+
+```typescript
+// BAD
+(navigation as any).navigate("OTP", { phone: number });
+
+// GOOD
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { AuthStackParamList } from "@/navigation/types";
+
+type AuthNavigation = NativeStackNavigationProp<AuthStackParamList>;
+
+const handleSubmit = (navigation: AuthNavigation, phoneNumber: string): void => {
+  navigation.navigate("OTP", { phoneNumber });
+};
+```

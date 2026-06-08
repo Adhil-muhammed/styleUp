@@ -4,11 +4,18 @@
     "slug": "StyleQuest",
     "version": "1.0.0",
     "userInterfaceStyle": "automatic",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "web": {
       "bundler": "metro",
       "output": "single",
       "favicon": "./src/assets/images/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

@@ -1,93 +1,133 @@
-// ─── Token Interfaces ─────────────────────────────────────────────────────────
+import type { TextStyle, ViewStyle } from "react-native";
 
-export type AppTheme = "light" | "dark";
+// ─── Midnight Edge — Token Types ──────────────────────────────────────────────
 
-export interface ColorPalette {
-  // Brand
-  primary: string;
-  primaryLight: string;
-  primaryDark: string;
-  // XP / Gamification
-  xpGold: string;
-  xpGoldLight: string;
-  xpSilver: string;
-  xpBronze: string;
-  // Semantic
-  success: string;
-  warning: string;
-  error: string;
-  info: string;
-  // Surfaces
-  background: string;
-  surface: string;
-  surfaceElevated: string;
-  border: string;
-  borderSubtle: string;
-  // Text
-  textPrimary: string;
-  textSecondary: string;
-  textDisabled: string;
-  textInverse: string;
-  textOnPrimary: string;
-}
+export type AppTheme = "midnight";
 
-export interface SpacingScale {
-  xxs: number;
-  xs: number;
-  sm: number;
-  md: number;
-  lg: number;
-  xl: number;
-  xxl: number;
-  xxxl: number;
-}
+export type FontWeight =
+  | "100"
+  | "200"
+  | "300"
+  | "400"
+  | "500"
+  | "600"
+  | "700"
+  | "800"
+  | "900";
 
 export interface TypographyToken {
   fontFamily: string;
   fontSize: number;
-  fontWeight:
-    | "100"
-    | "200"
-    | "300"
-    | "400"
-    | "500"
-    | "600"
-    | "700"
-    | "800"
-    | "900";
+  fontWeight: FontWeight;
   lineHeight: number;
-  letterSpacing: number;
+  /** Letter-spacing in em units — converted to RN points via toTextStyle */
+  letterSpacingEm: number;
+  textTransform?: "uppercase" | "none";
 }
 
 export interface TypographyScale {
-  // Display
-  displayLarge: TypographyToken;
-  displayMedium: TypographyToken;
-  displaySmall: TypographyToken;
-  // Heading
-  headingLarge: TypographyToken;
-  headingMedium: TypographyToken;
-  headingSmall: TypographyToken;
-  // Body
-  bodyLarge: TypographyToken;
-  bodyMedium: TypographyToken;
-  bodySmall: TypographyToken;
-  // Label
-  labelLarge: TypographyToken;
-  labelMedium: TypographyToken;
-  labelSmall: TypographyToken;
-  // Mono
-  mono: TypographyToken;
+  displayLg: TypographyToken;
+  headlineLg: TypographyToken;
+  headlineLgMobile: TypographyToken;
+  headlineMd: TypographyToken;
+  bodyLg: TypographyToken;
+  bodyMd: TypographyToken;
+  labelMd: TypographyToken;
+  labelSm: TypographyToken;
+}
+
+export interface ColorPalette {
+  depth: {
+    level0: string;
+    level1: string;
+    level2: string;
+    background: string;
+  };
+  border: {
+    level1: string;
+  };
+  primary: {
+    default: string;
+    dim: string;
+    active: string;
+  };
+  accent: {
+    amber: string;
+  };
+  gamification: {
+    emerald: string;
+  };
+  gradient: {
+    premium: readonly [string, string];
+  };
+  focus: {
+    glow: string;
+  };
+  glass: {
+    border: string;
+  };
+  text: {
+    primary: string;
+    secondary: string;
+    disabled: string;
+    onPrimary: string;
+  };
+  semantic: {
+    success: string;
+    warning: string;
+    error: string;
+  };
+  /** @deprecated Use colors.depth.level0 */
+  background: string;
+  /** @deprecated Use colors.depth.level1 */
+  surface: string;
+  /** @deprecated Use colors.depth.level2 */
+  surfaceElevated: string;
+  /** @deprecated Use colors.primary.default */
+  primaryLegacy: string;
+  /** @deprecated Use colors.text.primary */
+  textPrimary: string;
+  /** @deprecated Use colors.text.secondary */
+  textSecondary: string;
+}
+
+export interface SpacingScale {
+  containerMargin: number;
+  gutter: number;
+  stackSm: number;
+  stackMd: number;
+  stackLg: number;
+  sectionGap: number;
 }
 
 export interface BorderRadiusScale {
-  none: number;
-  xs: number;
   sm: number;
+  default: number;
   md: number;
   lg: number;
   xl: number;
   full: number;
+}
+
+export interface LayoutTokens {
+  columns: number;
+  containerMargin: number;
+}
+
+export interface MotionTokens {
+  spring: {
+    stiffness: number;
+    damping: number;
+  };
+  skeletonBase: string;
+}
+
+export interface IconTokens {
+  strokeWidth: number;
+}
+
+export interface GlassmorphismTokens {
+  blur: number;
 }
 
 export interface Theme {
@@ -95,190 +135,232 @@ export interface Theme {
   spacing: SpacingScale;
   typography: TypographyScale;
   borderRadius: BorderRadiusScale;
+  layout: LayoutTokens;
+  motion: MotionTokens;
+  icon: IconTokens;
+  glassmorphism: GlassmorphismTokens;
 }
 
-// ─── Shared Tokens ─────────────────────────────────────────────────────────────
+// ─── Immutable Midnight Edge Tokens ───────────────────────────────────────────
 
-const spacing: SpacingScale = {
-  xxs: 2,
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
-  xxxl: 64,
-};
-
-const borderRadius: BorderRadiusScale = {
-  none: 0,
-  xs: 2,
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 20,
-  full: 9999,
-};
-
-const typography: TypographyScale = {
-  displayLarge: {
-    fontFamily: "System",
-    fontSize: 57,
-    fontWeight: "700",
-    lineHeight: 64,
-    letterSpacing: -0.25,
-  },
-  displayMedium: {
-    fontFamily: "System",
-    fontSize: 45,
-    fontWeight: "700",
-    lineHeight: 52,
-    letterSpacing: 0,
-  },
-  displaySmall: {
-    fontFamily: "System",
-    fontSize: 36,
-    fontWeight: "700",
-    lineHeight: 44,
-    letterSpacing: 0,
-  },
-  headingLarge: {
-    fontFamily: "System",
-    fontSize: 32,
-    fontWeight: "700",
-    lineHeight: 40,
-    letterSpacing: 0,
-  },
-  headingMedium: {
-    fontFamily: "System",
-    fontSize: 28,
-    fontWeight: "600",
-    lineHeight: 36,
-    letterSpacing: 0,
-  },
-  headingSmall: {
-    fontFamily: "System",
-    fontSize: 24,
-    fontWeight: "600",
-    lineHeight: 32,
-    letterSpacing: 0,
-  },
-  bodyLarge: {
-    fontFamily: "System",
-    fontSize: 16,
-    fontWeight: "400",
-    lineHeight: 24,
-    letterSpacing: 0.15,
-  },
-  bodyMedium: {
-    fontFamily: "System",
-    fontSize: 14,
-    fontWeight: "400",
-    lineHeight: 20,
-    letterSpacing: 0.25,
-  },
-  bodySmall: {
-    fontFamily: "System",
-    fontSize: 12,
-    fontWeight: "400",
-    lineHeight: 16,
-    letterSpacing: 0.4,
-  },
-  labelLarge: {
-    fontFamily: "System",
-    fontSize: 14,
-    fontWeight: "600",
-    lineHeight: 20,
-    letterSpacing: 0.1,
-  },
-  labelMedium: {
-    fontFamily: "System",
-    fontSize: 12,
-    fontWeight: "500",
-    lineHeight: 16,
-    letterSpacing: 0.5,
-  },
-  labelSmall: {
-    fontFamily: "System",
-    fontSize: 11,
-    fontWeight: "500",
-    lineHeight: 16,
-    letterSpacing: 0.5,
-  },
-  mono: {
-    fontFamily: "monospace",
-    fontSize: 14,
-    fontWeight: "400",
-    lineHeight: 20,
-    letterSpacing: 0,
-  },
-};
-
-// ─── Light Theme ──────────────────────────────────────────────────────────────
-
-export const lightTheme: Theme = {
+export const midnightEdgeTokens = {
   colors: {
-    primary: "#7C3AED",
-    primaryLight: "#A78BFA",
-    primaryDark: "#5B21B6",
-    xpGold: "#F59E0B",
-    xpGoldLight: "#FDE68A",
-    xpSilver: "#9CA3AF",
-    xpBronze: "#B45309",
-    success: "#10B981",
-    warning: "#F59E0B",
-    error: "#EF4444",
-    info: "#3B82F6",
-    background: "#FAFAFA",
-    surface: "#FFFFFF",
-    surfaceElevated: "#F3F4F6",
-    border: "#E5E7EB",
-    borderSubtle: "#F3F4F6",
-    textPrimary: "#111827",
-    textSecondary: "#6B7280",
-    textDisabled: "#D1D5DB",
-    textInverse: "#FFFFFF",
-    textOnPrimary: "#FFFFFF",
+    depth: {
+      level0: "#0A0A0F",
+      level1: "#111118",
+      level2: "#1A1A24",
+      background: "#131318",
+    },
+    border: {
+      level1: "#2A2A3A",
+    },
+    primary: {
+      default: "#7C3AED",
+      dim: "#D2BBFF",
+      active: "#6D28D9",
+    },
+    accent: {
+      amber: "#FFB95F",
+    },
+    gamification: {
+      emerald: "#4EDEA3",
+    },
+    gradient: {
+      premium: ["#7C3AED", "#EC4899"] as const,
+    },
+    focus: {
+      glow: "rgba(124, 58, 237, 0.4)",
+    },
+    glass: {
+      border: "rgba(124, 58, 237, 0.15)",
+    },
+    text: {
+      primary: "#F4F4F5",
+      secondary: "#A1A1AA",
+      disabled: "#52525B",
+      onPrimary: "#FFFFFF",
+    },
+    semantic: {
+      success: "#4EDEA3",
+      warning: "#FFB95F",
+      error: "#F87171",
+    },
   },
-  spacing,
-  typography,
-  borderRadius,
-};
+  typography: {
+    displayLg: {
+      fontFamily: "Inter",
+      fontSize: 48,
+      fontWeight: "800" as const,
+      lineHeight: 52,
+      letterSpacingEm: -0.04,
+    },
+    headlineLg: {
+      fontFamily: "Inter",
+      fontSize: 32,
+      fontWeight: "700" as const,
+      lineHeight: 38,
+      letterSpacingEm: -0.02,
+    },
+    headlineLgMobile: {
+      fontFamily: "Inter",
+      fontSize: 28,
+      fontWeight: "700" as const,
+      lineHeight: 34,
+      letterSpacingEm: -0.02,
+    },
+    headlineMd: {
+      fontFamily: "Inter",
+      fontSize: 24,
+      fontWeight: "700" as const,
+      lineHeight: 30,
+      letterSpacingEm: -0.01,
+    },
+    bodyLg: {
+      fontFamily: "Inter",
+      fontSize: 18,
+      fontWeight: "400" as const,
+      lineHeight: 28,
+      letterSpacingEm: 0,
+    },
+    bodyMd: {
+      fontFamily: "Inter",
+      fontSize: 16,
+      fontWeight: "400" as const,
+      lineHeight: 24,
+      letterSpacingEm: 0,
+    },
+    labelMd: {
+      fontFamily: "Inter",
+      fontSize: 14,
+      fontWeight: "600" as const,
+      lineHeight: 20,
+      letterSpacingEm: 0.02,
+    },
+    labelSm: {
+      fontFamily: "Inter",
+      fontSize: 12,
+      fontWeight: "700" as const,
+      lineHeight: 16,
+      letterSpacingEm: 0.05,
+      textTransform: "uppercase" as const,
+    },
+  },
+  borderRadius: {
+    sm: 4,
+    default: 8,
+    md: 12,
+    lg: 16,
+    xl: 24,
+    full: 9999,
+  },
+  spacing: {
+    containerMargin: 20,
+    gutter: 16,
+    stackSm: 8,
+    stackMd: 16,
+    stackLg: 24,
+    sectionGap: 40,
+  },
+  layout: {
+    columns: 4,
+    containerMargin: 20,
+  },
+  motion: {
+    spring: {
+      stiffness: 300,
+      damping: 20,
+    },
+    skeletonBase: "#1A1A24",
+  },
+  icon: {
+    strokeWidth: 1.5,
+  },
+  glassmorphism: {
+    blur: 20,
+  },
+} as const;
 
-// ─── Dark Theme ───────────────────────────────────────────────────────────────
+export type MidnightEdgeTokens = typeof midnightEdgeTokens;
 
-export const darkTheme: Theme = {
+// ─── Theme Assembly ───────────────────────────────────────────────────────────
+
+const { colors: c, typography, borderRadius, spacing, layout, motion, icon, glassmorphism } =
+  midnightEdgeTokens;
+
+export const midnightEdgeTheme: Theme = {
   colors: {
-    primary: "#A78BFA",
-    primaryLight: "#C4B5FD",
-    primaryDark: "#7C3AED",
-    xpGold: "#FCD34D",
-    xpGoldLight: "#FEF08A",
-    xpSilver: "#9CA3AF",
-    xpBronze: "#D97706",
-    success: "#34D399",
-    warning: "#FCD34D",
-    error: "#F87171",
-    info: "#60A5FA",
-    background: "#0F0F0F",
-    surface: "#1A1A1A",
-    surfaceElevated: "#262626",
-    border: "#2E2E2E",
-    borderSubtle: "#1F1F1F",
-    textPrimary: "#F9FAFB",
-    textSecondary: "#9CA3AF",
-    textDisabled: "#4B5563",
-    textInverse: "#111827",
-    textOnPrimary: "#FFFFFF",
+    depth: { ...c.depth },
+    border: { ...c.border },
+    primary: { ...c.primary },
+    accent: { ...c.accent },
+    gamification: { ...c.gamification },
+    gradient: { premium: [...c.gradient.premium] as [string, string] },
+    focus: { ...c.focus },
+    glass: { ...c.glass },
+    text: { ...c.text },
+    semantic: { ...c.semantic },
+    background: c.depth.level0,
+    surface: c.depth.level1,
+    surfaceElevated: c.depth.level2,
+    primaryLegacy: c.primary.default,
+    textPrimary: c.text.primary,
+    textSecondary: c.text.secondary,
   },
-  spacing,
-  typography,
-  borderRadius,
+  typography: { ...typography },
+  borderRadius: { ...borderRadius },
+  spacing: { ...spacing },
+  layout: { ...layout },
+  motion: { ...motion },
+  icon: { ...icon },
+  glassmorphism: { ...glassmorphism },
 };
-
-// ─── Theme Registry ───────────────────────────────────────────────────────────
 
 export const themes: Record<AppTheme, Theme> = {
-  light: lightTheme,
-  dark: darkTheme,
+  midnight: midnightEdgeTheme,
 };
+
+// ─── Typography Helper ────────────────────────────────────────────────────────
+
+/** Maps font weight to the loaded @expo-google-fonts/inter family name. */
+export function interFontFamily(weight: FontWeight): string {
+  switch (weight) {
+    case "800":
+      return "Inter_800ExtraBold";
+    case "700":
+      return "Inter_700Bold";
+    case "600":
+      return "Inter_600SemiBold";
+    default:
+      return "Inter_400Regular";
+  }
+}
+
+/** Converts a Midnight Edge typography token into a React Native TextStyle. */
+export function toTextStyle(token: TypographyToken): TextStyle {
+  const style: TextStyle = {
+    fontFamily: interFontFamily(token.fontWeight),
+    fontSize: token.fontSize,
+    fontWeight: token.fontWeight,
+    lineHeight: token.lineHeight,
+    letterSpacing: token.fontSize * token.letterSpacingEm,
+  };
+
+  if (token.textTransform !== undefined) {
+    style.textTransform = token.textTransform;
+  }
+
+  return style;
+}
+
+/** Focus ring shadow props for interactive inputs and containers. */
+export function focusGlowStyle(theme: Theme): Pick<
+  ViewStyle,
+  "shadowColor" | "shadowOffset" | "shadowOpacity" | "shadowRadius"
+> {
+  return {
+    shadowColor: theme.colors.focus.glow,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+  };
+}

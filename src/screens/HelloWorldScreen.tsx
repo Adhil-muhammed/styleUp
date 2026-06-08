@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { useTheme } from "../hooks/useTheme";
+import { toTextStyle } from "../config/theme";
 import type { AppTabScreenProps } from "../navigation/types";
 
 type Props = AppTabScreenProps<"Feed">;
@@ -10,12 +11,28 @@ const HelloWorldScreen: React.FC<Props> = () => {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.depth.level0,
+          paddingHorizontal: theme.spacing.containerMargin,
+        },
+      ]}
     >
-      <Text style={[styles.title, { color: theme.colors.primary }]}>
+      <Text
+        style={[
+          toTextStyle(theme.typography.headlineLgMobile),
+          { color: theme.colors.primary.default },
+        ]}
+      >
         Hello, World!
       </Text>
-      <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+      <Text
+        style={[
+          toTextStyle(theme.typography.bodyMd),
+          { color: theme.colors.text.secondary },
+        ]}
+      >
         Welcome to StyleQuest
       </Text>
     </View>
@@ -28,14 +45,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 16,
   },
 });
 

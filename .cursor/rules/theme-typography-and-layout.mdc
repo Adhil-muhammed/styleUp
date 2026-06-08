@@ -1,0 +1,125 @@
+---
+description: "Validates typography scales, spacing tokens, and structural layout configurations for Midnight Edge UI blocks."
+globs: ["src/components/**/*.tsx", "src/screens/**/*.tsx"]
+alwaysApply: false
+---
+
+# Midnight Edge — Typography & Layout
+
+All text and layout spacing must consume Midnight Edge tokens from [`src/config/theme.ts`](src/config/theme.ts).
+
+## Typography — Inter Only
+
+All text must use the Inter font family via `toTextStyle()` — never `fontFamily: "System"` or hardcoded sizes.
+
+Headings must use weight 700–800 with tight negative letter-spacing from the token definition.
+
+| Token | Usage |
+|-------|-------|
+| `typography.displayLg` | Hero displays, splash headlines |
+| `typography.headlineLg` | Section titles (tablet/desktop) |
+| `typography.headlineLgMobile` | Section titles on mobile |
+| `typography.headlineMd` | Subsection headings |
+| `typography.bodyLg` | Lead paragraphs |
+| `typography.bodyMd` | Default body copy |
+| `typography.labelMd` | Form labels, nav items |
+| `typography.labelSm` | Badges, metadata, category tags (uppercase) |
+
+Metadata fields, badges, and category tags must use `typography.labelSm` exclusively — this enforces uppercase with 0.05em tracking.
+
+```tsx
+// BAD — hardcoded typography, System font
+<Text style={{ fontSize: 28, fontWeight: "700", letterSpacing: -0.5 }}>
+  Trending Styles
+</Text>
+<Text style={{ fontSize: 11, color: "#999" }}>Premium</Text>
+
+// GOOD — token-driven Inter typography
+import { toTextStyle } from "@/config/theme";
+import { useTheme } from "@/hooks/useTheme";
+
+const SectionHeader = ({ title, tag }: { title: string; tag: string }): React.JSX.Element => {
+  const { theme } = useTheme();
+
+  return (
+    <View style={{ gap: theme.spacing.stackSm }}>
+      <Text style={[toTextStyle(theme.typography.headlineLgMobile), { color: theme.colors.text.primary }]}>
+        {title}
+      </Text>
+      <Text style={[toTextStyle(theme.typography.labelSm), { color: theme.colors.primary.dim }]}>
+        {tag}
+      </Text>
+    </View>
+  );
+};
+```
+
+## Layout Spacing Tokens
+
+Use layout spacing tokens — never arbitrary pixel values for structural spacing.
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `spacing.containerMargin` | 20px | Horizontal screen inset |
+| `spacing.gutter` | 16px | Column gap in grid layouts |
+| `spacing.stackSm` | 8px | Tight vertical stacking |
+| `spacing.stackMd` | 16px | Default vertical stacking |
+| `spacing.stackLg` | 24px | Loose vertical stacking |
+| `spacing.sectionGap` | 40px | Gap between major sections |
+
+## 4-Column Fluid Layout
+
+Mobile layouts follow a 4-column fluid grid mental model:
+
+- Apply `spacing.containerMargin` (20px) as horizontal padding on screen containers
+- Divide remaining width into 4 columns separated by `spacing.gutter` (16px)
+- Full-width elements span all 4 columns; half-width spans 2 columns
+
+```tsx
+// GOOD — container margin + section gap
+const ScreenContainer = ({ children }: { children: React.ReactNode }): React.JSX.Element => {
+  const { theme } = useTheme();
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        paddingHorizontal: theme.spacing.containerMargin,
+        gap: theme.spacing.sectionGap,
+      }}
+    >
+      {children}
+    </View>
+  );
+};
+```
+
+## Masonry & Stat Pills
+
+Photo discovery streams and lifestyle lookbook layouts must use **asymmetrical masonry grids** — not uniform row heights.
+
+Horizontal stat indicators (XP, distance, user ratings) must use **full pill** border radius:
+
+```tsx
+// GOOD — stat pill with full radius
+<View
+  style={{
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: theme.spacing.stackMd,
+    paddingVertical: theme.spacing.stackSm,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.depth.level1,
+    borderColor: theme.colors.border.level1,
+    borderWidth: 1,
+  }}
+>
+  <Text style={[toTextStyle(theme.typography.labelMd), { color: theme.colors.gamification.emerald }]}>
+    +120 XP
+  </Text>
+</View>
+```
+
+## NativeWind Parity
+
+When using Tailwind classes, prefer mapped utilities from [`tailwind.config.js`](tailwind.config.js): `text-headline-lg-mobile`, `p-container-margin`, `rounded-full`, `bg-depth-1`.
