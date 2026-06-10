@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { StyleSheet, Text, View, type ListRenderItem } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import BottomSheetModal, {
   BottomSheetFlatList,
   BottomSheetFooter,
@@ -60,22 +60,37 @@ const DiscoverBookingSheet = ({
   const { theme } = useTheme();
   const { snapPoints, tabBarHeight } = useBookingSheetLayout();
   const sheetRef = useRef<BottomSheetModalMethods | null>(null);
-  const isFocused = useIsFocused();
+  const isMountedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
-    const frameId = requestAnimationFrame(() => {
-      sheetRef.current?.present?.();
-    });
-
+    isMountedRef.current = true;
     return () => {
-      cancelAnimationFrame(frameId);
-      sheetRef.current?.dismiss?.();
+      isMountedRef.current = false;
     };
-  }, [isFocused]);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const frameId = requestAnimationFrame(() => {
+        if (!sheetRef.current || !isMountedRef.current) {
+          return;
+        }
+        try {
+          sheetRef.current.present();
+        } catch (err: unknown) {
+          console.warn(
+            "[DiscoverBookingSheet] present() failed — ensure BottomSheetModalProvider is at the tree root.",
+            err,
+          );
+        }
+      });
+
+      return () => {
+        cancelAnimationFrame(frameId);
+        sheetRef.current?.dismiss?.();
+      };
+    }, []),
+  );
 
   const animationConfigs = useBottomSheetSpringConfigs({
     stiffness: SHEET_SPRING_STIFFNESS,

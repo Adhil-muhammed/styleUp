@@ -9,6 +9,7 @@ export const LOCATION_FETCH_TIMEOUT_MS = 10_000;
 export type DiscoverLocationState =
   | "idle"
   | "checking"
+  | "requesting"
   | "granted"
   | "denied"
   | "blocked"
@@ -25,6 +26,7 @@ export interface ResolvePermissionOptions {
   shouldAutoRequest: boolean;
   allowDeniedRetryRequest: boolean;
   sessionFlag: PermissionSessionFlag;
+  onRequesting?: () => void;
 }
 
 export class LocationFetchTimeoutError extends Error {
@@ -70,8 +72,10 @@ export async function resolvePermissionStatus(
 
   if (shouldRequestUndetermined) {
     options.sessionFlag.hasRequested = true;
+    options.onRequesting?.();
     await Location.requestForegroundPermissionsAsync();
   } else if (shouldRequestDeniedRetry) {
+    options.onRequesting?.();
     await Location.requestForegroundPermissionsAsync();
   }
 

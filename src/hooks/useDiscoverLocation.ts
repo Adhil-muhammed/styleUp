@@ -51,6 +51,14 @@ export function useDiscoverLocation(): DiscoverLocationResult {
           shouldAutoRequest,
           allowDeniedRetryRequest,
           sessionFlag: sessionPermissionRequest,
+          onRequesting: () => {
+            if (
+              isMountedRef.current &&
+              generation === syncGenerationRef.current
+            ) {
+              setLocationState("requesting");
+            }
+          },
         });
 
         if (!isMountedRef.current || generation !== syncGenerationRef.current) {
@@ -100,7 +108,10 @@ export function useDiscoverLocation(): DiscoverLocationResult {
           return;
         }
 
-        console.warn("[useDiscoverLocation] Failed to resolve location:", error);
+        console.warn(
+          "[useDiscoverLocation] Failed to resolve location:",
+          error,
+        );
         setUserLocation(null);
         setLocationState("error");
       }
@@ -109,15 +120,19 @@ export function useDiscoverLocation(): DiscoverLocationResult {
   );
 
   const retryLocation = useCallback((): void => {
+    sessionPermissionRequest.hasRequested = false;
     isManualRetryRef.current = true;
     setRetryCount((count) => count + 1);
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      void syncLocation(true, false);
+      const timerId = setTimeout(() => {
+        void syncLocation(true, false);
+      }, 300);
 
       return () => {
+        clearTimeout(timerId);
         syncGenerationRef.current += 1;
       };
     }, [syncLocation]),

@@ -23,12 +23,8 @@ type Props = AppTabScreenProps<"Discover">;
 
 const DiscoverScreen = (_props: Props): React.JSX.Element => {
   const { theme } = useTheme();
-  const {
-    locationState,
-    userLocation,
-    canShowUserLocation,
-    retryLocation,
-  } = useDiscoverLocation();
+  const { locationState, userLocation, canShowUserLocation, retryLocation } =
+    useDiscoverLocation();
   const { nearbyPins } = useNearbyMapShops(userLocation, DEMO_MAP_SHOPS);
 
   const [selectedServiceId, setSelectedServiceId] = useState(
@@ -108,7 +104,9 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
         serviceAreas={DEMO_SERVICE_AREA_CIRCLES}
         userCoordinate={userLocation}
         canShowUserLocation={canShowUserLocation}
-        isLocationChecking={locationState === "checking"}
+        isLocationChecking={
+          locationState === "checking" || locationState === "requesting"
+        }
         onMapPress={handleMapPress}
         onPinPress={handlePinPress}
       />

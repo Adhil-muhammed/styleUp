@@ -47,9 +47,9 @@ describe("discoverLocation", () => {
     });
 
     it("returns denied when denied and can ask again", () => {
-      expect(
-        mapPermissionToState(Location.PermissionStatus.DENIED, true),
-      ).toBe("denied");
+      expect(mapPermissionToState(Location.PermissionStatus.DENIED, true)).toBe(
+        "denied",
+      );
     });
 
     it("returns blocked when denied and cannot ask again", () => {
@@ -133,9 +133,9 @@ describe("discoverLocation", () => {
         sessionFlag,
       });
 
-      expect(mockedLocation.requestForegroundPermissionsAsync).toHaveBeenCalledTimes(
-        1,
-      );
+      expect(
+        mockedLocation.requestForegroundPermissionsAsync,
+      ).toHaveBeenCalledTimes(1);
       expect(sessionFlag.hasRequested).toBe(true);
 
       mockedLocation.getForegroundPermissionsAsync.mockResolvedValue({
@@ -151,9 +151,9 @@ describe("discoverLocation", () => {
         sessionFlag,
       });
 
-      expect(mockedLocation.requestForegroundPermissionsAsync).toHaveBeenCalledTimes(
-        1,
-      );
+      expect(
+        mockedLocation.requestForegroundPermissionsAsync,
+      ).toHaveBeenCalledTimes(1);
     });
 
     it("always re-reads permission after a request", async () => {
@@ -184,8 +184,73 @@ describe("discoverLocation", () => {
         sessionFlag,
       });
 
-      expect(mockedLocation.getForegroundPermissionsAsync).toHaveBeenCalledTimes(2);
+      expect(
+        mockedLocation.getForegroundPermissionsAsync,
+      ).toHaveBeenCalledTimes(2);
       expect(result.status).toBe(Location.PermissionStatus.GRANTED);
+    });
+
+    it("calls onRequesting before requestForegroundPermissionsAsync when undetermined", async () => {
+      mockedLocation.getForegroundPermissionsAsync
+        .mockResolvedValueOnce({
+          status: Location.PermissionStatus.UNDETERMINED,
+          granted: false,
+          canAskAgain: true,
+          expires: "never",
+        })
+        .mockResolvedValueOnce({
+          status: Location.PermissionStatus.GRANTED,
+          granted: true,
+          canAskAgain: true,
+          expires: "never",
+        });
+
+      const callOrder: string[] = [];
+      mockedLocation.requestForegroundPermissionsAsync.mockImplementation(
+        async () => {
+          callOrder.push("request");
+          return {
+            status: Location.PermissionStatus.GRANTED,
+            granted: true,
+            canAskAgain: true,
+            expires: "never",
+          };
+        },
+      );
+
+      const onRequesting = jest.fn(() => {
+        callOrder.push("onRequesting");
+      });
+
+      await resolvePermissionStatus({
+        shouldAutoRequest: true,
+        allowDeniedRetryRequest: false,
+        sessionFlag,
+        onRequesting,
+      });
+
+      expect(onRequesting).toHaveBeenCalledTimes(1);
+      expect(callOrder).toEqual(["onRequesting", "request"]);
+    });
+
+    it("does not call onRequesting when permission is already granted", async () => {
+      mockedLocation.getForegroundPermissionsAsync.mockResolvedValue({
+        status: Location.PermissionStatus.GRANTED,
+        granted: true,
+        canAskAgain: true,
+        expires: "never",
+      });
+
+      const onRequesting = jest.fn();
+
+      await resolvePermissionStatus({
+        shouldAutoRequest: true,
+        allowDeniedRetryRequest: false,
+        sessionFlag,
+        onRequesting,
+      });
+
+      expect(onRequesting).not.toHaveBeenCalled();
     });
   });
 });
