@@ -1,115 +1,127 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  BarberCardCarousel,
-  DiscoverSearchBar,
-  DiscoverTopBar,
-  FilterPillRow,
-  MapBackground,
-  MapPin,
+  DiscoverBookingSheet,
+  DiscoverMap,
+  LocationPermissionBanner,
+  MapBackButton,
 } from "@/components/discover";
 import {
-  BARBER_CARDS,
-  FILTER_OPTIONS,
-  MAP_PINS,
+  BOOKING_PROFILE_FILTERS,
+  BOOKING_SERVICES,
+  BOOKING_TIME_FILTERS,
+  DEMO_MAP_SHOPS,
+  DEMO_SERVICE_AREA_CIRCLES,
+  PAYMENT_METHODS,
 } from "@/data/discoverMock";
-import { getTabBarTotalHeight } from "@/components/layout";
+import { useDiscoverMapLocation } from "@/hooks/useDiscoverMapLocation";
+import { useNearbyMapShops } from "@/hooks/useNearbyMapShops";
 import { useTheme } from "@/hooks/useTheme";
 import type { AppTabScreenProps } from "@/navigation/types";
 
 type Props = AppTabScreenProps<"Discover">;
 
-const TOP_BAR_CONTENT_HEIGHT = 56;
-
 const DiscoverScreen = (_props: Props): React.JSX.Element => {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilterId, setActiveFilterId] = useState(FILTER_OPTIONS[0]?.id ?? "all");
+  const {
+    userCoordinate,
+    canShowUserLocation,
+    permissionStatus,
+    locationError,
+    retryLocation,
+  } = useDiscoverMapLocation();
+  const { nearbyPins } = useNearbyMapShops(userCoordinate, DEMO_MAP_SHOPS);
 
-  const handleFilterSelect = useCallback((id: string): void => {
-    setActiveFilterId(id);
-  }, []);
-
-  const handleSearchChange = useCallback((text: string): void => {
-    setSearchQuery(text);
-  }, []);
-
-  const searchStackTop = useMemo(
-    () => insets.top + TOP_BAR_CONTENT_HEIGHT + theme.spacing.stackMd * 2,
-    [insets.top, theme.spacing.stackMd],
+  const [selectedServiceId, setSelectedServiceId] = useState(
+    BOOKING_SERVICES[0]?.id ?? "",
+  );
+  const [activeTimeId, setActiveTimeId] = useState(
+    BOOKING_TIME_FILTERS[0]?.id ?? "now",
+  );
+  const [activeProfileId, setActiveProfileId] = useState(
+    BOOKING_PROFILE_FILTERS[0]?.id ?? "me",
+  );
+  const [activePaymentId, setActivePaymentId] = useState(
+    PAYMENT_METHODS[0]?.id ?? "cash",
   );
 
-  const tabBarHeight = useMemo(
-    () => getTabBarTotalHeight(insets.bottom),
-    [insets.bottom],
+  const handleMapPress = useCallback((): void => {
+    // Stub for future map interaction (pan, zoom, pin focus).
+  }, []);
+
+  const handlePinPress = useCallback((_pinId: string): void => {
+    // Stub for future pin focus / barber detail.
+  }, []);
+
+  const handleSelectService = useCallback((serviceId: string): void => {
+    setSelectedServiceId(serviceId);
+  }, []);
+
+  const handleTimeSelect = useCallback((id: string): void => {
+    setActiveTimeId(id);
+  }, []);
+
+  const handleProfileSelect = useCallback((id: string): void => {
+    setActiveProfileId(id);
+  }, []);
+
+  const handlePaymentPress = useCallback((): void => {
+    // Stub for future payment method picker.
+  }, []);
+
+  const handleConfirmBooking = useCallback((): void => {
+    // Stub for future booking confirmation flow.
+  }, []);
+
+  const sheetProps = useMemo(
+    () => ({
+      services: BOOKING_SERVICES,
+      selectedServiceId,
+      onSelectService: handleSelectService,
+      timeOptions: BOOKING_TIME_FILTERS,
+      profileOptions: BOOKING_PROFILE_FILTERS,
+      paymentOptions: PAYMENT_METHODS,
+      activeTimeId,
+      activeProfileId,
+      activePaymentId,
+      onTimeSelect: handleTimeSelect,
+      onProfileSelect: handleProfileSelect,
+      onPaymentPress: handlePaymentPress,
+      onConfirmBooking: handleConfirmBooking,
+    }),
+    [
+      activePaymentId,
+      activeProfileId,
+      activeTimeId,
+      handleConfirmBooking,
+      handlePaymentPress,
+      handleProfileSelect,
+      handleSelectService,
+      handleTimeSelect,
+      selectedServiceId,
+    ],
   );
 
   return (
     <View style={[styles.root, { backgroundColor: theme.colors.depth.level0 }]}>
-      <MapBackground />
+      <DiscoverMap
+        pins={nearbyPins}
+        serviceAreas={DEMO_SERVICE_AREA_CIRCLES}
+        userCoordinate={userCoordinate}
+        canShowUserLocation={canShowUserLocation}
+        onMapPress={handleMapPress}
+        onPinPress={handlePinPress}
+      />
 
-      {MAP_PINS.map((pin) => (
-        <MapPin
-          key={pin.id}
-          avatarUri={pin.avatarUri}
-          label={pin.label}
-          variant={pin.variant}
-          size={pin.size}
-          style={{
-            position: "absolute",
-            top: `${pin.topPercent}%`,
-            left: `${pin.leftPercent}%`,
-            zIndex: 10,
-          }}
-        />
-      ))}
+      <MapBackButton />
 
-      <DiscoverTopBar />
+      <LocationPermissionBanner
+        permissionStatus={permissionStatus}
+        locationError={locationError}
+        onRetry={retryLocation}
+      />
 
-      <View
-        style={[
-          styles.searchStack,
-          {
-            top: searchStackTop,
-            paddingHorizontal: theme.spacing.containerMargin,
-            gap: theme.spacing.stackMd,
-          },
-        ]}
-        pointerEvents="box-none"
-      >
-        <DiscoverSearchBar value={searchQuery} onChangeText={handleSearchChange} />
-        <FilterPillRow
-          options={FILTER_OPTIONS}
-          activeId={activeFilterId}
-          onSelect={handleFilterSelect}
-        />
-      </View>
-
-      <View
-        style={[
-          styles.drawer,
-          {
-            bottom: tabBarHeight,
-            paddingBottom: theme.spacing.stackMd,
-          },
-        ]}
-        pointerEvents="box-none"
-      >
-        <View style={styles.handleWrap}>
-          <View
-            style={[
-              styles.handle,
-              {
-                backgroundColor: `${theme.colors.text.disabled}66`,
-                borderRadius: theme.borderRadius.full,
-              },
-            ]}
-          />
-        </View>
-        <BarberCardCarousel cards={BARBER_CARDS} />
-      </View>
+      <DiscoverBookingSheet {...sheetProps} />
     </View>
   );
 };
@@ -117,27 +129,6 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    overflow: "hidden",
-  },
-  searchStack: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    zIndex: 40,
-  },
-  drawer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    zIndex: 40,
-  },
-  handleWrap: {
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  handle: {
-    width: 48,
-    height: 6,
   },
 });
 

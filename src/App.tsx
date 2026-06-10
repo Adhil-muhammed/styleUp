@@ -1,6 +1,8 @@
 import "../global.css"; // NativeWind — must be imported at the application root
 import React, { createContext, useContext } from "react";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { NavigationContainer } from "@react-navigation/native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   useFonts,
@@ -55,10 +57,11 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 // ─── Root App Component ────────────────────────────────────────────────────────
 //
 // Provider order (outermost → innermost):
-//   SafeAreaProvider          — native safe area insets (must wrap NavigationContainer)
-//     ThemeProvider           — active theme tokens via React Context
-//       NavigationContainer   — React Navigation root
-//         RootNavigator       — auth-gated navigation tree
+//   BottomSheetModalProvider  — portal host for Gorhom bottom sheets above native views
+//     SafeAreaProvider          — native safe area insets (must wrap NavigationContainer)
+//       ThemeProvider           — active theme tokens via React Context
+//         NavigationContainer   — React Navigation root
+//           RootNavigator       — auth-gated navigation tree
 
 const App: React.FC = () => {
   const [fontsLoaded] = useFonts({
@@ -73,13 +76,17 @@ const App: React.FC = () => {
   }
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 };
 

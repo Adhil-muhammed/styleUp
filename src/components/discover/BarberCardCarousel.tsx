@@ -1,43 +1,49 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { FlashList, type ListRenderItemInfo } from "@shopify/flash-list";
-import BarberCard from "./BarberCard";
+import BarberCard, { type BarberCardDensity } from "./BarberCard";
 import { useTheme } from "@/hooks/useTheme";
-import {
-  BARBER_CARD_WIDTH,
-  type BarberCardData,
-} from "@/data/discoverMock";
+import type { BarberCardData } from "@/data/discoverMock";
 
 interface BarberCardCarouselProps {
   cards: BarberCardData[];
+  cardWidth: number;
+  carouselHeight: number;
+  cardGap: number;
+  density?: BarberCardDensity;
   onPressCta?: (cardId: string) => void;
 }
 
-const CARD_GAP = 20;
-const ITEM_SIZE = BARBER_CARD_WIDTH + CARD_GAP;
-
 const BarberCardCarousel = ({
   cards,
+  cardWidth,
+  carouselHeight,
+  cardGap,
+  density = "default",
   onPressCta,
 }: BarberCardCarouselProps): React.JSX.Element => {
   const { theme } = useTheme();
 
+  const itemSize = useMemo(() => cardWidth + cardGap, [cardWidth, cardGap]);
+
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<BarberCardData>) => (
-      <View style={{ marginRight: CARD_GAP }}>
+      <View style={{ marginRight: cardGap }}>
         <BarberCard
           card={item}
+          width={cardWidth}
+          density={density}
           {...(onPressCta !== undefined ? { onPressCta } : {})}
         />
       </View>
     ),
-    [onPressCta],
+    [cardGap, cardWidth, density, onPressCta],
   );
 
   const keyExtractor = useCallback((item: BarberCardData) => item.id, []);
 
   return (
-    <View style={styles.listContainer}>
+    <View style={[styles.listContainer, { height: carouselHeight }]}>
       <FlashList
         data={cards}
         renderItem={renderItem}
@@ -47,7 +53,7 @@ const BarberCardCarousel = ({
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.containerMargin,
         }}
-        snapToInterval={ITEM_SIZE}
+        snapToInterval={itemSize}
         decelerationRate="fast"
       />
     </View>
@@ -55,9 +61,7 @@ const BarberCardCarousel = ({
 };
 
 const styles = StyleSheet.create({
-  listContainer: {
-    height: 280,
-  },
+  listContainer: {},
 });
 
 export default BarberCardCarousel;

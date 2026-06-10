@@ -12,14 +12,30 @@ import { useTheme } from "@/hooks/useTheme";
 import { toTextStyle } from "@/config/theme";
 import type { BarberCardData } from "@/data/discoverMock";
 
+export type BarberCardDensity = "default" | "compact";
+
 interface BarberCardProps {
   card: BarberCardData;
+  width: number;
+  density?: BarberCardDensity;
   onPressCta?: (cardId: string) => void;
 }
 
-const BarberCard = ({ card, onPressCta }: BarberCardProps): React.JSX.Element => {
+const DENSITY_METRICS = {
+  default: { padding: 24, gap: 16, avatarSize: 56, profileGap: 16 },
+  compact: { padding: 16, gap: 12, avatarSize: 48, profileGap: 12 },
+} as const;
+
+const BarberCard = ({
+  card,
+  width,
+  density = "default",
+  onPressCta,
+}: BarberCardProps): React.JSX.Element => {
   const { theme } = useTheme();
   const isFeatured = card.variant === "featured";
+  const metrics = DENSITY_METRICS[density];
+  const avatarRadius = metrics.avatarSize / 2;
 
   const handleCtaPress = useCallback((): void => {
     onPressCta?.(card.id);
@@ -32,7 +48,9 @@ const BarberCard = ({ card, onPressCta }: BarberCardProps): React.JSX.Element =>
       style={[
         styles.card,
         {
-          width: 300,
+          width,
+          padding: metrics.padding,
+          gap: metrics.gap,
           borderRadius: theme.borderRadius.xl,
           borderColor: isFeatured
             ? `${theme.colors.primary.default}4D`
@@ -53,13 +71,16 @@ const BarberCard = ({ card, onPressCta }: BarberCardProps): React.JSX.Element =>
       )}
 
       <View style={styles.header}>
-        <View style={styles.profileRow}>
+        <View style={[styles.profileRow, { gap: metrics.profileGap }]}>
           {card.avatarUri ? (
             <Image
               source={{ uri: card.avatarUri }}
               style={[
                 styles.avatar,
                 {
+                  width: metrics.avatarSize,
+                  height: metrics.avatarSize,
+                  borderRadius: avatarRadius,
                   borderColor: isFeatured
                     ? theme.colors.primary.default
                     : theme.colors.border.level1,
@@ -80,6 +101,9 @@ const BarberCard = ({ card, onPressCta }: BarberCardProps): React.JSX.Element =>
               style={[
                 styles.avatarPlaceholder,
                 {
+                  width: metrics.avatarSize,
+                  height: metrics.avatarSize,
+                  borderRadius: avatarRadius,
                   borderColor: theme.colors.border.level1,
                   backgroundColor: theme.colors.depth.level2,
                 },
@@ -216,8 +240,6 @@ const BarberCard = ({ card, onPressCta }: BarberCardProps): React.JSX.Element =>
 
 const styles = StyleSheet.create({
   card: {
-    padding: 24,
-    gap: 16,
     overflow: "hidden",
   },
   featuredTint: {
@@ -232,19 +254,12 @@ const styles = StyleSheet.create({
   profileRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
     flex: 1,
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     resizeMode: "cover",
   },
   avatarPlaceholder: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",

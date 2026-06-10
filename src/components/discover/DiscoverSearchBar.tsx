@@ -23,9 +23,7 @@ const DiscoverSearchBar = ({
   const handleBlur = useCallback((): void => setFocused(false), []);
 
   return (
-    <BlurView
-      intensity={theme.glassmorphism.blur}
-      tint="dark"
+    <View
       style={[
         styles.container,
         {
@@ -36,7 +34,20 @@ const DiscoverSearchBar = ({
         focused && focusGlowStyle(theme),
       ]}
     >
-      <MaterialIcons name="search" size={22} color={theme.colors.text.secondary} />
+      <BlurView
+        intensity={theme.glassmorphism.blur}
+        tint="dark"
+        style={[
+          StyleSheet.absoluteFill,
+          { borderRadius: theme.borderRadius.full },
+        ]}
+        pointerEvents="none"
+      />
+      <MaterialIcons
+        name="search"
+        size={22}
+        color={theme.colors.text.secondary}
+      />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -57,7 +68,7 @@ const DiscoverSearchBar = ({
           color={theme.colors.text.secondary}
         />
       </Pressable>
-    </BlurView>
+    </View>
   );
 };
 
@@ -69,6 +80,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderWidth: 1,
     gap: 8,
+    overflow: "hidden",
   },
   input: {
     flex: 1,

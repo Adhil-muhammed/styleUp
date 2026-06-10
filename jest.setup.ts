@@ -8,15 +8,73 @@ jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
 
-// Reanimated — use official test setup (must run after mock registration)
-jest.mock("react-native-reanimated", () => {
-  const Reanimated = require("react-native-reanimated/mock");
-  Reanimated.default.call = () => {};
-  return Reanimated;
+// react-native-maps — View stubs for Jest
+jest.mock("react-native-maps", () => {
+  const React = require("react");
+  const { View } = require("react-native");
+
+  const MapView = React.forwardRef(
+    ({ children }: { children?: React.ReactNode }, _ref: React.Ref<unknown>) =>
+      React.createElement(View, null, children),
+  );
+  const Marker = ({ children }: { children?: React.ReactNode }) =>
+    React.createElement(View, null, children);
+  const Circle = () => React.createElement(View, null);
+
+  return {
+    __esModule: true,
+    default: MapView,
+    Marker,
+    Circle,
+    PROVIDER_GOOGLE: "google",
+  };
 });
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-require("react-native-reanimated").setUpTests();
+jest.mock("expo-location", () => ({
+  PermissionStatus: {
+    UNDETERMINED: "undetermined",
+    GRANTED: "granted",
+    DENIED: "denied",
+  },
+  Accuracy: {
+    Balanced: 3,
+  },
+  requestForegroundPermissionsAsync: jest.fn(() =>
+    Promise.resolve({ status: "granted" }),
+  ),
+  hasServicesEnabledAsync: jest.fn(() => Promise.resolve(true)),
+  getCurrentPositionAsync: jest.fn(() =>
+    Promise.resolve({
+      coords: {
+        latitude: 9.057637514710933,
+        longitude: 76.60201525949192,
+        altitude: 0,
+        accuracy: 10,
+        altitudeAccuracy: 0,
+        heading: 0,
+        speed: 0,
+      },
+      timestamp: Date.now(),
+    }),
+  ),
+}));
+
+// Reanimated — lightweight stub (avoids worklets native init in Jest)
+jest.mock("react-native-reanimated", () => {
+  const { View } = require("react-native");
+
+  return {
+    __esModule: true,
+    default: {
+      call: () => {},
+      createAnimatedComponent: (component: typeof View) => component,
+    },
+    useSharedValue: <T,>(initial: T) => ({ value: initial }),
+    useAnimatedStyle: (updater: () => object) => updater(),
+    withSpring: <T,>(value: T) => value,
+    withTiming: <T,>(value: T) => value,
+  };
+});
 
 // React Navigation — lightweight stubs
 jest.mock("@react-navigation/native", () => {

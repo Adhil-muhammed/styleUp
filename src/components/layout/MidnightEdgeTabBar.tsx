@@ -1,14 +1,9 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import { useTheme } from "@/hooks/useTheme";
 import { toTextStyle } from "@/config/theme";
 import type { AppTabParamList } from "@/navigation/types";
@@ -61,8 +56,6 @@ interface TabItemProps {
   inactiveColor: string;
   activeColor: string;
   iconGlowColor: string;
-  springStiffness: number;
-  springDamping: number;
   labelStyle: ReturnType<typeof toTextStyle>;
 }
 
@@ -73,23 +66,8 @@ const TabItem = ({
   inactiveColor,
   activeColor,
   iconGlowColor,
-  springStiffness,
-  springDamping,
   labelStyle,
 }: TabItemProps): React.JSX.Element => {
-  const scale = useSharedValue(isFocused ? 1.1 : 1);
-
-  useEffect(() => {
-    scale.value = withSpring(isFocused ? 1.1 : 1, {
-      stiffness: springStiffness,
-      damping: springDamping,
-    });
-  }, [isFocused, scale, springDamping, springStiffness]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   const color = isFocused ? activeColor : inactiveColor;
   const iconName = isFocused && config.iconActive !== undefined ? config.iconActive : config.icon;
   const iconGlowStyle = isFocused
@@ -108,7 +86,7 @@ const TabItem = ({
       accessibilityRole="button"
       accessibilityState={isFocused ? { selected: true } : {}}
     >
-      <Animated.View style={[styles.tabContent, animatedStyle]}>
+      <View style={[styles.tabContent, isFocused && styles.tabContentFocused]}>
         {config.iconFamily === "community" ? (
           <MaterialCommunityIcons
             name={iconName as CommunityIconName}
@@ -128,7 +106,7 @@ const TabItem = ({
         {isFocused && (
           <View style={[styles.activeDot, { backgroundColor: activeColor }]} />
         )}
-      </Animated.View>
+      </View>
     </Pressable>
   );
 };
@@ -187,8 +165,6 @@ const MidnightEdgeTabBar = ({
               inactiveColor={theme.colors.nav.inactive}
               activeColor={theme.colors.nav.active}
               iconGlowColor={theme.colors.nav.iconGlow}
-              springStiffness={theme.motion.spring.stiffness}
-              springDamping={theme.motion.spring.damping}
               labelStyle={labelStyle}
             />
           );
@@ -217,6 +193,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingBottom: 4,
+  },
+  tabContentFocused: {
+    transform: [{ scale: 1.1 }],
   },
   icon: {
     marginBottom: 4,

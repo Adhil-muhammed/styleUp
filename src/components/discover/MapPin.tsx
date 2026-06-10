@@ -1,13 +1,5 @@
 import React, { useCallback } from "react";
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -22,7 +14,6 @@ interface MapPinProps {
   label: string;
   variant: MapPinVariant;
   size: number;
-  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
 
@@ -33,17 +24,15 @@ const MapPin = ({
   label,
   variant,
   size,
-  style,
   onPress,
 }: MapPinProps): React.JSX.Element => {
   const { theme } = useTheme();
   const scale = useSharedValue(1);
 
   const isPrimary = variant === "primary";
-  const ringColor = isPrimary ? theme.colors.primary.default : theme.colors.accent.amber;
-  const glowColor = isPrimary
-    ? "rgba(124, 58, 237, 0.5)"
-    : "rgba(255, 185, 95, 0.4)";
+  const ringColor = isPrimary
+    ? theme.colors.primary.default
+    : theme.colors.accent.amber;
 
   const handlePressIn = useCallback((): void => {
     scale.value = withSpring(1.1, {
@@ -68,7 +57,7 @@ const MapPin = ({
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={[styles.wrapper, style, animatedStyle]}
+      style={[styles.wrapper, animatedStyle]}
     >
       <View
         style={[
@@ -79,10 +68,6 @@ const MapPin = ({
             borderRadius: size / 2,
             borderColor: ringColor,
             backgroundColor: theme.colors.depth.background,
-            shadowColor: glowColor,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 1,
-            shadowRadius: 15,
           },
         ]}
       >
@@ -115,7 +100,11 @@ const MapPin = ({
         <Text
           style={[
             toTextStyle(theme.typography.labelSm),
-            { color: isPrimary ? theme.colors.text.primary : theme.colors.accent.amber },
+            {
+              color: isPrimary
+                ? theme.colors.text.primary
+                : theme.colors.accent.amber,
+            },
           ]}
         >
           {label}
