@@ -14,7 +14,7 @@ import {
   DEMO_SERVICE_AREA_CIRCLES,
   PAYMENT_METHODS,
 } from "@/data/discoverMock";
-import { useDiscoverMapLocation } from "@/hooks/useDiscoverMapLocation";
+import { useDiscoverLocation } from "@/hooks/useDiscoverLocation";
 import { useNearbyMapShops } from "@/hooks/useNearbyMapShops";
 import { useTheme } from "@/hooks/useTheme";
 import type { AppTabScreenProps } from "@/navigation/types";
@@ -24,13 +24,12 @@ type Props = AppTabScreenProps<"Discover">;
 const DiscoverScreen = (_props: Props): React.JSX.Element => {
   const { theme } = useTheme();
   const {
-    userCoordinate,
+    locationState,
+    userLocation,
     canShowUserLocation,
-    permissionStatus,
-    locationError,
     retryLocation,
-  } = useDiscoverMapLocation();
-  const { nearbyPins } = useNearbyMapShops(userCoordinate, DEMO_MAP_SHOPS);
+  } = useDiscoverLocation();
+  const { nearbyPins } = useNearbyMapShops(userLocation, DEMO_MAP_SHOPS);
 
   const [selectedServiceId, setSelectedServiceId] = useState(
     BOOKING_SERVICES[0]?.id ?? "",
@@ -107,8 +106,9 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
       <DiscoverMap
         pins={nearbyPins}
         serviceAreas={DEMO_SERVICE_AREA_CIRCLES}
-        userCoordinate={userCoordinate}
+        userCoordinate={userLocation}
         canShowUserLocation={canShowUserLocation}
+        isLocationChecking={locationState === "checking"}
         onMapPress={handleMapPress}
         onPinPress={handlePinPress}
       />
@@ -116,8 +116,7 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
       <MapBackButton />
 
       <LocationPermissionBanner
-        permissionStatus={permissionStatus}
-        locationError={locationError}
+        locationState={locationState}
         onRetry={retryLocation}
       />
 

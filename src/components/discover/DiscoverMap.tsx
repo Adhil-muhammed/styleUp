@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 import MapView, { Circle, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { LinearGradient } from "expo-linear-gradient";
 import MapPin from "./MapPin";
@@ -18,10 +18,13 @@ const MAP_FIT_EDGE_PADDING = {
   left: 40,
 } as const;
 
+const USER_LOCATION_REGION_DELTA = 0.01;
+
 interface DiscoverMapProps {
   pins: MapPinData[];
   serviceAreas?: ServiceAreaCircle[];
   canShowUserLocation: boolean;
+  isLocationChecking?: boolean;
   userCoordinate?: MapCoordinate | null;
   onMapPress?: () => void;
   onPinPress?: (pinId: string) => void;
@@ -31,6 +34,7 @@ const DiscoverMap = ({
   pins,
   serviceAreas = [],
   canShowUserLocation,
+  isLocationChecking = false,
   userCoordinate,
   onMapPress,
   onPinPress,
@@ -38,6 +42,30 @@ const DiscoverMap = ({
   const { theme } = useTheme();
   const mapRef = useRef<MapView>(null);
   const mapReadyRef = useRef(false);
+  const lastAnimatedCoordinateRef = useRef<MapCoordinate | null>(null);
+
+  const animateToUserLocation = useCallback(
+    (coordinate: MapCoordinate): void => {
+      if (!mapReadyRef.current) {
+        return;
+      }
+
+      try {
+        mapRef.current?.animateToRegion(
+          {
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            latitudeDelta: USER_LOCATION_REGION_DELTA,
+            longitudeDelta: USER_LOCATION_REGION_DELTA,
+          },
+          500,
+        );
+      } catch {
+        // Map may not be laid out yet; initialRegion still shows demo area.
+      }
+    },
+    [],
+  );
 
   const handleMapPress = useCallback((): void => {
     onMapPress?.();
@@ -95,6 +123,26 @@ const DiscoverMap = ({
     fitMapToContent();
   }, [fitMapToContent]);
 
+  useEffect(() => {
+    if (userCoordinate === null || userCoordinate === undefined) {
+      lastAnimatedCoordinateRef.current = null;
+      return;
+    }
+
+    const last = lastAnimatedCoordinateRef.current;
+    const isSameCoordinate =
+      last !== null &&
+      last.latitude === userCoordinate.latitude &&
+      last.longitude === userCoordinate.longitude;
+
+    if (isSameCoordinate) {
+      return;
+    }
+
+    lastAnimatedCoordinateRef.current = userCoordinate;
+    animateToUserLocation(userCoordinate);
+  }, [animateToUserLocation, userCoordinate]);
+
   const gradientOverlay = (
     <LinearGradient
       colors={[
@@ -137,19 +185,6 @@ const DiscoverMap = ({
         onPress={handleMapPress}
         onMapReady={handleMapReady}
       >
-        {serviceAreas.map((area) => (
-          <Circle
-            key={area.id}
-            center={{
-              latitude: area.latitude,
-              longitude: area.longitude,
-            }}
-            radius={area.radiusMeters}
-            fillColor={`${theme.colors.primary.default}26`}
-            strokeColor={theme.colors.primary.default}
-            strokeWidth={2}
-          />
-        ))}
         {pins.map((pin) => (
           <Marker
             key={pin.id}
@@ -170,6 +205,14 @@ const DiscoverMap = ({
           </Marker>
         ))}
       </MapView>
+      {isLocationChecking ? (
+        <View style={styles.loadingOverlay} pointerEvents="none">
+          <ActivityIndicator
+            size="small"
+            color={theme.colors.primary.default}
+          />
+        </View>
+      ) : null}
       {gradientOverlay}
     </View>
   );
@@ -181,6 +224,16 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFill,
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    zIndex: 10,
+    elevation: 10,
+    padding: 8,
+    borderRadius: 9999,
+    backgroundColor: "rgba(10, 10, 15, 0.75)",
   },
 });
 

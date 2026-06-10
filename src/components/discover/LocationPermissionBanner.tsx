@@ -2,46 +2,43 @@ import React, { useCallback } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Location from "expo-location";
 import { useTheme } from "@/hooks/useTheme";
-import type { DiscoverLocationError } from "@/hooks/useDiscoverMapLocation";
+import type { DiscoverLocationState } from "@/utils/discoverLocation";
 import { toTextStyle } from "@/config/theme";
 
 interface LocationPermissionBannerProps {
-  permissionStatus: Location.PermissionStatus;
-  locationError: DiscoverLocationError;
+  locationState: DiscoverLocationState;
   onRetry: () => void;
 }
 
 const LocationPermissionBanner = ({
-  permissionStatus,
-  locationError,
+  locationState,
   onRetry,
 }: LocationPermissionBannerProps): React.JSX.Element | null => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
-  const isDenied =
-    permissionStatus === Location.PermissionStatus.DENIED ||
-    locationError === "permission_denied";
-  const isServicesDisabled = locationError === "services_disabled";
-  const isPositionUnavailable = locationError === "position_unavailable";
-
-  const isVisible = isDenied || isServicesDisabled || isPositionUnavailable;
-
   const handleOpenSettings = useCallback((): void => {
     void Linking.openSettings();
   }, []);
+
+  const isVisible =
+    locationState === "denied" ||
+    locationState === "blocked" ||
+    locationState === "error";
 
   if (!isVisible) {
     return null;
   }
 
-  const message = isServicesDisabled
-    ? "Turn on location services to find nearby barbers."
-    : isPositionUnavailable
-      ? "Unable to get your location. Try again or check GPS settings."
-      : "Enable location to find nearby barbers.";
+  const message =
+    locationState === "error"
+      ? "Unable to get your location. Turn on GPS or try again."
+      : locationState === "blocked"
+        ? "Location access is blocked. Enable it in Settings to find nearby barbers."
+        : "Enable location to find nearby barbers.";
+
+  const showRetry = locationState === "denied" || locationState === "error";
 
   return (
     <View
@@ -76,7 +73,7 @@ const LocationPermissionBanner = ({
       </View>
       <View style={styles.actions}>
         <Pressable
-          onPress={onRetry}
+          onPress={handleOpenSettings}
           style={({ pressed }) => [
             styles.button,
             {
@@ -92,30 +89,32 @@ const LocationPermissionBanner = ({
               { color: theme.colors.text.onPrimary },
             ]}
           >
-            Retry
+            Enable Location
           </Text>
         </Pressable>
-        <Pressable
-          onPress={handleOpenSettings}
-          style={({ pressed }) => [
-            styles.button,
-            styles.secondaryButton,
-            {
-              borderColor: theme.colors.border.level1,
-              borderRadius: theme.borderRadius.full,
-              opacity: pressed ? 0.85 : 1,
-            },
-          ]}
-        >
-          <Text
-            style={[
-              toTextStyle(theme.typography.labelMd),
-              { color: theme.colors.text.primary },
+        {showRetry ? (
+          <Pressable
+            onPress={onRetry}
+            style={({ pressed }) => [
+              styles.button,
+              styles.secondaryButton,
+              {
+                borderColor: theme.colors.border.level1,
+                borderRadius: theme.borderRadius.full,
+                opacity: pressed ? 0.85 : 1,
+              },
             ]}
           >
-            Settings
-          </Text>
-        </Pressable>
+            <Text
+              style={[
+                toTextStyle(theme.typography.labelMd),
+                { color: theme.colors.text.primary },
+              ]}
+            >
+              Retry
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
