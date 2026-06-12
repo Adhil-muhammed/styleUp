@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AppState, type AppStateStatus } from "react-native";
+import {
+  AppState,
+  Linking,
+  Platform,
+  type AppStateStatus,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import * as IntentLauncher from "expo-intent-launcher";
 import * as Location from "expo-location";
 import type { MapCoordinate } from "@/config/map";
 import {
@@ -87,11 +93,48 @@ export function useDiscoverLocation(): DiscoverLocationResult {
         }
 
         if (!servicesEnabled) {
-          console.warn(
-            "[useDiscoverLocation] Location services disabled on device.",
-          );
           setUserLocation(null);
-          setLocationState("error");
+          setLocationState("services_disabled");
+
+          if (Platform.OS === "android") {
+            try {
+              await Location.enableNetworkProviderAsync();
+
+              if (
+                !isMountedRef.current ||
+                generation !== syncGenerationRef.current
+              ) {
+                return;
+              }
+
+              void syncLocation(true, false);
+              return;
+            } catch {
+              try {
+                await IntentLauncher.startActivityAsync(
+                  IntentLauncher.ActivityAction.LOCATION_SOURCE_SETTINGS,
+                );
+              } catch (intentError: unknown) {
+                console.warn(
+                  "[useDiscoverLocation] Failed to open location settings:",
+                  intentError,
+                );
+              }
+              return;
+            }
+          }
+
+          if (Platform.OS === "ios") {
+            try {
+              await Linking.openSettings();
+            } catch (settingsError: unknown) {
+              console.warn(
+                "[useDiscoverLocation] Failed to open settings:",
+                settingsError,
+              );
+            }
+          }
+
           return;
         }
 

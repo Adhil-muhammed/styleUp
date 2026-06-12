@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getTabBarTotalHeight } from "@/components/layout";
 import {
   getBookingSheetSnapPoints,
   getCollapsedSnapPointPx,
@@ -12,7 +11,7 @@ export interface BookingSheetLayoutMetrics {
   snapPoints: [string, string];
   collapsedPx: number;
   expandedPx: number;
-  tabBarHeight: number;
+  bottomInset: number;
   topInset: number;
 }
 
@@ -21,13 +20,11 @@ export function useBookingSheetLayout(): BookingSheetLayoutMetrics {
   const insets = useSafeAreaInsets();
 
   return useMemo(() => {
-    const tabBarHeight = getTabBarTotalHeight(insets.bottom);
-
     return {
       snapPoints: getBookingSheetSnapPoints(),
       collapsedPx: getCollapsedSnapPointPx(screenHeight),
       expandedPx: getExpandedSnapPointPx(screenHeight),
-      tabBarHeight,
+      bottomInset: insets.bottom,
       topInset: insets.top,
     };
   }, [insets.bottom, insets.top, screenHeight]);

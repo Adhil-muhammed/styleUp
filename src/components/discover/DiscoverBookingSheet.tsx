@@ -58,7 +58,7 @@ const DiscoverBookingSheet = ({
   onConfirmBooking,
 }: DiscoverBookingSheetProps): React.JSX.Element => {
   const { theme } = useTheme();
-  const { snapPoints, tabBarHeight } = useBookingSheetLayout();
+  const { snapPoints, bottomInset } = useBookingSheetLayout();
   const sheetRef = useRef<BottomSheetModalMethods | null>(null);
   const isMountedRef = useRef<boolean>(false);
 
@@ -69,21 +69,75 @@ const DiscoverBookingSheet = ({
     };
   }, []);
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     let retryTimeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  //     const attemptPresent = (): void => {
+  //       if (!isMountedRef.current) {
+  //         return;
+  //       }
+
+  //       if (typeof sheetRef.current?.present !== "function") {
+  //         return;
+  //       }
+
+  //       try {
+  //         sheetRef.current.present();
+  //       } catch (err: unknown) {
+  //         console.warn(
+  //           "[DiscoverBookingSheet] present() called before ref was ready — retrying.",
+  //           err,
+  //         );
+  //       }
+  //     };
+
+  //     const frameId = requestAnimationFrame(() => {
+  //       if (typeof sheetRef.current?.present === "function") {
+  //         attemptPresent();
+  //         return;
+  //       }
+
+  //       console.warn(
+  //         "[DiscoverBookingSheet] present() called before ref was ready — retrying.",
+  //       );
+
+  //       retryTimeoutId = setTimeout(() => {
+  //         attemptPresent();
+  //       }, 50);
+  //     });
+
+  //     return () => {
+  //       cancelAnimationFrame(frameId);
+  //       if (retryTimeoutId !== undefined) {
+  //         clearTimeout(retryTimeoutId);
+  //       }
+  //       sheetRef.current?.dismiss?.();
+  //     };
+  //   }, []),
+  // );
+
   useFocusEffect(
     useCallback(() => {
-      const frameId = requestAnimationFrame(() => {
-        if (!sheetRef.current || !isMountedRef.current) {
+      let frameId: ReturnType<typeof requestAnimationFrame>;
+      let attempts = 0;
+      const MAX_ATTEMPTS = 10;
+
+      const tryPresent = (): void => {
+        if (!isMountedRef.current) return;
+
+        if (typeof sheetRef.current?.present === "function") {
+          sheetRef.current.present();
           return;
         }
-        try {
-          sheetRef.current.present();
-        } catch (err: unknown) {
-          console.warn(
-            "[DiscoverBookingSheet] present() failed — ensure BottomSheetModalProvider is at the tree root.",
-            err,
-          );
+
+        if (attempts < MAX_ATTEMPTS) {
+          attempts++;
+          frameId = requestAnimationFrame(tryPresent);
         }
-      });
+      };
+
+      frameId = requestAnimationFrame(tryPresent);
 
       return () => {
         cancelAnimationFrame(frameId);
@@ -191,7 +245,7 @@ const DiscoverBookingSheet = ({
       }}
       snapPoints={snapPoints}
       enablePanDownToClose={false}
-      bottomInset={tabBarHeight}
+      bottomInset={bottomInset}
       animationConfigs={animationConfigs}
       keyboardBehavior="interactive"
       android_keyboardInputMode="adjustResize"

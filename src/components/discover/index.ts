@@ -1,8 +1,9 @@
 export { default as LocationPermissionBanner } from "./LocationPermissionBanner";
-export { default as DiscoverMap } from "./DiscoverMap";
+export { default as DiscoverMap, type DiscoverMapHandle } from "./DiscoverMap";
 export { default as MapBackground } from "./MapBackground";
 export { default as MapPin } from "./MapPin";
 export { default as MapBackButton } from "./MapBackButton";
+export { default as MapUserLocationButton } from "./MapUserLocationButton";
 export { default as DiscoverBookingSheet } from "./DiscoverBookingSheet";
 export { default as BarberServiceRow } from "./BarberServiceRow";
 export { default as BookingQuickFilters } from "./BookingQuickFilters";

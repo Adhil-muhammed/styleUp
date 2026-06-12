@@ -13,7 +13,8 @@ export type DiscoverLocationState =
   | "granted"
   | "denied"
   | "blocked"
-  | "error";
+  | "error"
+  | "services_disabled";
 
 /** Signals the caller should fetch device position after permission is granted. */
 export type PermissionResolveResult = DiscoverLocationState | "fetch";

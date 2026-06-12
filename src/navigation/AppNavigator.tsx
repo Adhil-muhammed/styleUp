@@ -13,7 +13,13 @@ const Tab = createBottomTabNavigator<AppTabParamList>();
 const AppNavigator: React.FC = () => {
   return (
     <Tab.Navigator
-      tabBar={(props) => <MidnightEdgeTabBar {...props} />}
+      tabBar={(props) => {
+        const focusedRoute = props.state.routes[props.state.index];
+        if (focusedRoute?.name === "Discover") {
+          return null;
+        }
+        return <MidnightEdgeTabBar {...props} />;
+      }}
       screenOptions={{
         headerShown: false,
         tabBarStyle: {

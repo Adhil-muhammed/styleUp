@@ -25,27 +25,33 @@ const LocationPermissionBanner = ({
   const isVisible =
     locationState === "denied" ||
     locationState === "blocked" ||
-    locationState === "error";
+    locationState === "error" ||
+    locationState === "services_disabled";
 
   if (!isVisible) {
     return null;
   }
 
   const message =
-    locationState === "error"
-      ? "Unable to get your location. Turn on GPS or try again."
-      : locationState === "blocked"
-        ? "Location access is blocked. Enable it in Settings to find nearby barbers."
-        : "Enable location to find nearby barbers.";
+    locationState === "services_disabled"
+      ? "Turn on location services to find nearby barbers."
+      : locationState === "error"
+        ? "Unable to get your location. Turn on GPS or try again."
+        : locationState === "blocked"
+          ? "Location access is blocked. Enable it in Settings to find nearby barbers."
+          : "Enable location to find nearby barbers.";
 
-  const showRetry = locationState === "denied" || locationState === "error";
+  const showRetry =
+    locationState === "denied" ||
+    locationState === "error" ||
+    locationState === "services_disabled";
 
   return (
     <View
       style={[
         styles.container,
         {
-          top: insets.top + theme.spacing.stackMd + 52,
+          top: insets.top + theme.spacing.stackMd + 44 + theme.spacing.stackSm,
           left: theme.spacing.containerMargin,
           right: theme.spacing.containerMargin,
           backgroundColor: theme.colors.depth.level1,
