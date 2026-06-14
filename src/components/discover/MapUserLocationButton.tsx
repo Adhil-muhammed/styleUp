@@ -47,7 +47,7 @@ const MapUserLocationButton = ({
 const styles = StyleSheet.create({
   button: {
     position: "absolute",
-    // zIndex: 50,
+    zIndex: 50,
     width: 44,
     height: 44,
     borderRadius: 22,

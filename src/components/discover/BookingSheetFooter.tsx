@@ -89,7 +89,7 @@ const BookingSheetFooter = ({
             { color: theme.colors.text.onPrimary },
           ]}
         >
-          Confirm Booking — {selectedServiceTitle}
+          View Profile — {selectedServiceTitle}
         </Text>
       </Pressable>
     </View>

@@ -69,54 +69,6 @@ const DiscoverBookingSheet = ({
     };
   }, []);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     let retryTimeoutId: ReturnType<typeof setTimeout> | undefined;
-
-  //     const attemptPresent = (): void => {
-  //       if (!isMountedRef.current) {
-  //         return;
-  //       }
-
-  //       if (typeof sheetRef.current?.present !== "function") {
-  //         return;
-  //       }
-
-  //       try {
-  //         sheetRef.current.present();
-  //       } catch (err: unknown) {
-  //         console.warn(
-  //           "[DiscoverBookingSheet] present() called before ref was ready — retrying.",
-  //           err,
-  //         );
-  //       }
-  //     };
-
-  //     const frameId = requestAnimationFrame(() => {
-  //       if (typeof sheetRef.current?.present === "function") {
-  //         attemptPresent();
-  //         return;
-  //       }
-
-  //       console.warn(
-  //         "[DiscoverBookingSheet] present() called before ref was ready — retrying.",
-  //       );
-
-  //       retryTimeoutId = setTimeout(() => {
-  //         attemptPresent();
-  //       }, 50);
-  //     });
-
-  //     return () => {
-  //       cancelAnimationFrame(frameId);
-  //       if (retryTimeoutId !== undefined) {
-  //         clearTimeout(retryTimeoutId);
-  //       }
-  //       sheetRef.current?.dismiss?.();
-  //     };
-  //   }, []),
-  // );
-
   useFocusEffect(
     useCallback(() => {
       let frameId: ReturnType<typeof requestAnimationFrame>;

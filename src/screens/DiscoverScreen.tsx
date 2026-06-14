@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   DiscoverBookingSheet,
@@ -17,6 +17,7 @@ import {
   PAYMENT_METHODS,
 } from "@/data/discoverMock";
 import { useBookingSheetLayout } from "@/hooks/useBookingSheetLayout";
+import { useDiscoverBooking } from "@/hooks/useDiscoverBooking";
 import { useDiscoverLocation } from "@/hooks/useDiscoverLocation";
 import { useNearbyMapShops } from "@/hooks/useNearbyMapShops";
 import { useTheme } from "@/hooks/useTheme";
@@ -32,16 +33,10 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
     useDiscoverLocation();
   const { nearbyPins } = useNearbyMapShops(userLocation, DEMO_MAP_SHOPS);
 
-  const [selectedServiceId, setSelectedServiceId] = useState(
+  const booking = useDiscoverBooking(
     BOOKING_SERVICES[0]?.id ?? "",
-  );
-  const [activeTimeId, setActiveTimeId] = useState(
     BOOKING_TIME_FILTERS[0]?.id ?? "now",
-  );
-  const [activeProfileId, setActiveProfileId] = useState(
     BOOKING_PROFILE_FILTERS[0]?.id ?? "me",
-  );
-  const [activePaymentId, setActivePaymentId] = useState(
     PAYMENT_METHODS[0]?.id ?? "cash",
   );
 
@@ -59,57 +54,23 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
     // Stub for future map interaction (pan, zoom, pin focus).
   }, []);
 
-  const handlePinPress = useCallback((_pinId: string): void => {
-    // Stub for future pin focus / barber detail.
-  }, []);
-
-  const handleSelectService = useCallback((serviceId: string): void => {
-    setSelectedServiceId(serviceId);
-  }, []);
-
-  const handleTimeSelect = useCallback((id: string): void => {
-    setActiveTimeId(id);
-  }, []);
-
-  const handleProfileSelect = useCallback((id: string): void => {
-    setActiveProfileId(id);
-  }, []);
-
-  const handlePaymentPress = useCallback((): void => {
-    // Stub for future payment method picker.
-  }, []);
-
-  const handleConfirmBooking = useCallback((): void => {
-    // Stub for future booking confirmation flow.
-  }, []);
-
   const sheetProps = useMemo(
     () => ({
       services: BOOKING_SERVICES,
-      selectedServiceId,
-      onSelectService: handleSelectService,
+      selectedServiceId: booking.selectedServiceId,
+      onSelectService: booking.handleSelectService,
       timeOptions: BOOKING_TIME_FILTERS,
       profileOptions: BOOKING_PROFILE_FILTERS,
       paymentOptions: PAYMENT_METHODS,
-      activeTimeId,
-      activeProfileId,
-      activePaymentId,
-      onTimeSelect: handleTimeSelect,
-      onProfileSelect: handleProfileSelect,
-      onPaymentPress: handlePaymentPress,
-      onConfirmBooking: handleConfirmBooking,
+      activeTimeId: booking.activeTimeId,
+      activeProfileId: booking.activeProfileId,
+      activePaymentId: booking.activePaymentId,
+      onTimeSelect: booking.handleTimeSelect,
+      onProfileSelect: booking.handleProfileSelect,
+      onPaymentPress: booking.handlePaymentPress,
+      onConfirmBooking: booking.handleConfirmBooking,
     }),
-    [
-      activePaymentId,
-      activeProfileId,
-      activeTimeId,
-      handleConfirmBooking,
-      handlePaymentPress,
-      handleProfileSelect,
-      handleSelectService,
-      handleTimeSelect,
-      selectedServiceId,
-    ],
+    [booking],
   );
 
   return (
@@ -125,7 +86,7 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
             locationState === "checking" || locationState === "requesting"
           }
           onMapPress={handleMapPress}
-          onPinPress={handlePinPress}
+          onPinPress={booking.handlePinPress}
         />
 
         <MapBackButton />
@@ -143,8 +104,8 @@ const DiscoverScreen = (_props: Props): React.JSX.Element => {
             onPress={handleRecenterOnUser}
           />
         ) : null}
-        <DiscoverBookingSheet {...sheetProps} />
       </View>
+      <DiscoverBookingSheet {...sheetProps} />
     </View>
   );
 };

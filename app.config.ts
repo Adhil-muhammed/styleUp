@@ -16,6 +16,7 @@ const config: ExpoConfig = {
   },
   plugins: [
     "expo-font",
+    "@react-native-community/datetimepicker",
     [
       "expo-location",
       {

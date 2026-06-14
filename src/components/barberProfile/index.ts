@@ -1,0 +1,10 @@
+export { default as BarberProfileHero } from "./BarberProfileHero";
+export { default as ShopProfileHeader } from "./ShopProfileHeader";
+export { default as ProfileActionBar } from "./ProfileActionBar";
+export { default as SpecialistCard } from "./SpecialistCard";
+export { default as SpecialistCarousel } from "./SpecialistCarousel";
+export { default as ProfileAboutSection } from "./ProfileAboutSection";
+export { default as ProfileWorkingHours } from "./ProfileWorkingHours";
+export { default as ProfileContactSection } from "./ProfileContactSection";
+export { default as ProfileAddressSection } from "./ProfileAddressSection";
+export { default as ProfileBookBar } from "./ProfileBookBar";

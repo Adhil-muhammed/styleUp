@@ -1,14 +1,15 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import type { CompositeScreenProps } from "@react-navigation/native";
+import type { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native";
 import type { ModalType } from "../types";
 
 // ─── Param Lists ──────────────────────────────────────────────────────────────
 
 export type RootStackParamList = {
   Auth: undefined;
-  App: undefined;
+  App: NavigatorScreenParams<AppTabParamList> | undefined;
   Modal: { modalType: ModalType };
+  BarberProfile: { shopId: string };
 };
 
 export type AuthStackParamList = {
@@ -17,10 +18,14 @@ export type AuthStackParamList = {
   OTP: { phoneNumber: string };
 };
 
+export type BookScreenParams = {
+  fromDiscover?: boolean;
+};
+
 export type AppTabParamList = {
   Home: undefined;
   Discover: undefined;
-  Book: undefined;
+  Book: BookScreenParams | undefined;
   Feed: undefined;
   Profile: undefined;
 };
