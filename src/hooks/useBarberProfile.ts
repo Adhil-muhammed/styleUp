@@ -5,27 +5,29 @@ import {
   getShopProfile,
   PROFILE_TAB_OPTIONS,
   type ProfileTabId,
+  type ServiceCategory,
+  type ShopPackage,
   type ShopProfile,
 } from "@/data/barberProfileMock";
 import { useBookingDraftStore } from "@/store/bookingDraftStore";
-import { resolveBarberFromShopPin } from "@/utils/mapDiscoverToBookDraft";
+import { navigateToBookAppointment } from "@/utils/navigateToBookAppointment";
 import type { RootStackParamList } from "@/navigation/types";
-
-const DEFAULT_DISCOVER_SERVICE_ID = "service-1";
-const DEFAULT_TIME_FILTER_ID = "schedule";
-const DEFAULT_PROFILE_ID = "me";
-const DEFAULT_PAYMENT_ID = "cash";
 
 export interface UseBarberProfileResult {
   shop: ShopProfile;
   activeTab: ProfileTabId;
   isAboutExpanded: boolean;
   tabOptions: typeof PROFILE_TAB_OPTIONS;
+  serviceCategories: readonly ServiceCategory[];
+  packages: readonly ShopPackage[];
   onTabChange: (tabId: string) => void;
   onToggleAboutExpanded: () => void;
   onBookNow: () => void;
   onGoBack: () => void;
   onActionPress: (actionId: string) => void;
+  onServiceCategoryPress: (categoryId: string) => void;
+  onPackagePress: (packageId: string) => void;
+  onPackageBookPress: (packageId: string) => void;
 }
 
 export function useBarberProfile(shopId: string): UseBarberProfileResult {
@@ -55,37 +57,50 @@ export function useBarberProfile(shopId: string): UseBarberProfileResult {
     navigation.goBack();
   }, [navigation]);
 
-  const onBookNow = useCallback((): void => {
-    const barber = resolveBarberFromShopPin(shop.id);
-
-    setDraftFromDiscover({
-      shopPinId: shop.id,
-      barber,
-      discoverServiceId: DEFAULT_DISCOVER_SERVICE_ID,
-      timeFilterId: DEFAULT_TIME_FILTER_ID,
-      profileId: DEFAULT_PROFILE_ID,
-      paymentId: DEFAULT_PAYMENT_ID,
-    });
-
-    navigation.navigate("App", {
-      screen: "Book",
-      params: { fromDiscover: true },
-    });
+  const navigateToBook = useCallback((): void => {
+    navigateToBookAppointment(navigation, setDraftFromDiscover, shop.id);
   }, [navigation, setDraftFromDiscover, shop.id]);
+
+  const onBookNow = useCallback((): void => {
+    navigateToBook();
+  }, [navigateToBook]);
 
   const onActionPress = useCallback((_actionId: string): void => {
     // Stub for future website, message, call, direction, share handlers.
   }, []);
+
+  const onServiceCategoryPress = useCallback((_categoryId: string): void => {
+    // Stub for future service category detail drill-down.
+  }, []);
+
+  const onPackagePress = useCallback(
+    (packageId: string): void => {
+      navigation.navigate("PackageDetails", { shopId: shop.id, packageId });
+    },
+    [navigation, shop.id],
+  );
+
+  const onPackageBookPress = useCallback(
+    (packageId: string): void => {
+      navigation.navigate("PackageDetails", { shopId: shop.id, packageId });
+    },
+    [navigation, shop.id],
+  );
 
   return {
     shop,
     activeTab,
     isAboutExpanded,
     tabOptions: PROFILE_TAB_OPTIONS,
+    serviceCategories: shop.serviceCategories,
+    packages: shop.packages,
     onTabChange,
     onToggleAboutExpanded,
     onBookNow,
     onGoBack,
     onActionPress,
+    onServiceCategoryPress,
+    onPackagePress,
+    onPackageBookPress,
   };
 }

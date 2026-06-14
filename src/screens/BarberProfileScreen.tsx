@@ -9,6 +9,8 @@ import {
   ProfileAddressSection,
   ProfileBookBar,
   ProfileContactSection,
+  ProfilePackagesSection,
+  ProfileServicesSection,
   ProfileWorkingHours,
   ShopProfileHeader,
   SpecialistCarousel,
@@ -28,11 +30,14 @@ const BarberProfileScreen = ({ route }: Props): React.JSX.Element => {
   const insets = useSafeAreaInsets();
   const profile = useBarberProfile(route.params.shopId);
 
-  const scrollBottomPadding =
-    CONFIRM_CTA_APPROX_HEIGHT +
-    BOOK_BAR_EXTRA_PADDING +
-    insets.bottom +
-    theme.spacing.stackMd * 2;
+  const showBookBar = profile.activeTab !== "package";
+
+  const scrollBottomPadding = showBookBar
+    ? CONFIRM_CTA_APPROX_HEIGHT +
+      BOOK_BAR_EXTRA_PADDING +
+      insets.bottom +
+      theme.spacing.stackMd * 2
+    : insets.bottom + theme.spacing.stackMd;
 
   const heroImage = profile.shop.heroImages[0] ?? "";
 
@@ -90,6 +95,17 @@ const BarberProfileScreen = ({ route }: Props): React.JSX.Element => {
                 mapImageUri={heroImage}
               />
             </>
+          ) : profile.activeTab === "services" ? (
+            <ProfileServicesSection
+              categories={profile.serviceCategories}
+              onCategoryPress={profile.onServiceCategoryPress}
+            />
+          ) : profile.activeTab === "package" ? (
+            <ProfilePackagesSection
+              packages={profile.packages}
+              onPackagePress={profile.onPackagePress}
+              onPackageBookPress={profile.onPackageBookPress}
+            />
           ) : (
             <Text
               style={[
@@ -103,9 +119,11 @@ const BarberProfileScreen = ({ route }: Props): React.JSX.Element => {
         </View>
       </ScrollView>
 
-      <View style={styles.bookBar}>
-        <ProfileBookBar onBookNow={profile.onBookNow} />
-      </View>
+      {showBookBar ? (
+        <View style={styles.bookBar}>
+          <ProfileBookBar onBookNow={profile.onBookNow} />
+        </View>
+      ) : null}
     </View>
   );
 };

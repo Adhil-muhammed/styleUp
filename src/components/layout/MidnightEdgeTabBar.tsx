@@ -30,12 +30,6 @@ const TAB_CONFIG: TabConfig[] = [
     icon: "explore",
     iconActive: "explore",
   },
-  {
-    name: "Book",
-    label: "Book",
-    iconFamily: "community",
-    icon: "calendar-plus",
-  },
   { name: "Feed", label: "Feed", iconFamily: "material", icon: "style" },
   { name: "Profile", label: "Profile", iconFamily: "material", icon: "person" },
 ];

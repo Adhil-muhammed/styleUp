@@ -4,7 +4,6 @@ import type { AppTabParamList } from "./types";
 import { MidnightEdgeTabBar } from "../components/layout";
 import HomeScreen from "../screens/HomeScreen";
 import DiscoverScreen from "../screens/DiscoverScreen";
-import BookScreen from "../screens/BookScreen";
 import FeedScreen from "../screens/FeedScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
@@ -34,7 +33,6 @@ const AppNavigator: React.FC = () => {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Discover" component={DiscoverScreen} />
-      <Tab.Screen name="Book" component={BookScreen} />
       <Tab.Screen name="Feed" component={FeedScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

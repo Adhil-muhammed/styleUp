@@ -10,6 +10,8 @@ export type RootStackParamList = {
   App: NavigatorScreenParams<AppTabParamList> | undefined;
   Modal: { modalType: ModalType };
   BarberProfile: { shopId: string };
+  PackageDetails: { shopId: string; packageId: string };
+  BookAppointment: { shopId: string };
 };
 
 export type AuthStackParamList = {
@@ -18,14 +20,9 @@ export type AuthStackParamList = {
   OTP: { phoneNumber: string };
 };
 
-export type BookScreenParams = {
-  fromDiscover?: boolean;
-};
-
 export type AppTabParamList = {
   Home: undefined;
   Discover: undefined;
-  Book: BookScreenParams | undefined;
   Feed: undefined;
   Profile: undefined;
 };

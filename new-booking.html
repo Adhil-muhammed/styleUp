@@ -1,0 +1,566 @@
+<!doctype html>
+<html class="dark" lang="en" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Book Appointment</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed": "#6ffbbe",
+              surface: "#131318",
+              "secondary-fixed": "#ffddb8",
+              "on-tertiary-fixed-variant": "#005236",
+              "surface-container-low": "#1b1b20",
+              "surface-bright": "#39383e",
+              "inverse-surface": "#e4e1e9",
+              "on-primary": "#3f008e",
+              outline: "#958da1",
+              "primary-fixed-dim": "#d2bbff",
+              "on-background": "#e4e1e9",
+              "error-container": "#93000a",
+              "surface-tint": "#d2bbff",
+              "surface-variant": "#35343a",
+              "surface-container-lowest": "#0e0e13",
+              "secondary-container": "#ee9800",
+              tertiary: "#4edea3",
+              "on-primary-fixed-variant": "#5a00c6",
+              "primary-fixed": "#eaddff",
+              "on-tertiary-container": "#76ffc2",
+              "on-surface": "#e4e1e9",
+              "surface-dim": "#131318",
+              "inverse-on-surface": "#303036",
+              "secondary-fixed-dim": "#ffb95f",
+              "on-secondary-container": "#5b3800",
+              "tertiary-container": "#007650",
+              "on-surface-variant": "#ccc3d8",
+              "on-secondary-fixed": "#2a1700",
+              "on-error": "#690005",
+              "on-secondary": "#472a00",
+              "outline-variant": "#4a4455",
+              "on-secondary-fixed-variant": "#653e00",
+              "on-tertiary-fixed": "#002113",
+              "on-primary-container": "#ede0ff",
+              "surface-container": "#1f1f25",
+              "on-primary-fixed": "#25005a",
+              "surface-container-high": "#2a292f",
+              error: "#ffb4ab",
+              secondary: "#ffb95f",
+              "primary-container": "#7c3aed",
+              "inverse-primary": "#732ee4",
+              background: "#131318",
+              "on-error-container": "#ffdad6",
+              "surface-container-highest": "#35343a",
+              "on-tertiary": "#003824",
+              "tertiary-fixed-dim": "#4edea3",
+              primary: "#d2bbff",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              "stack-lg": "24px",
+              "stack-sm": "8px",
+              gutter: "16px",
+              "stack-md": "16px",
+              "section-gap": "40px",
+              "container-margin": "20px",
+            },
+            fontFamily: {
+              "display-lg": ["Inter"],
+              "label-md": ["Inter"],
+              "headline-md": ["Inter"],
+              "label-sm": ["Inter"],
+              "body-md": ["Inter"],
+              "body-lg": ["Inter"],
+              "headline-lg-mobile": ["Inter"],
+              "headline-lg": ["Inter"],
+            },
+            fontSize: {
+              "display-lg": [
+                "48px",
+                {
+                  lineHeight: "52px",
+                  letterSpacing: "-0.04em",
+                  fontWeight: "800",
+                },
+              ],
+              "label-md": [
+                "14px",
+                {
+                  lineHeight: "20px",
+                  letterSpacing: "0.02em",
+                  fontWeight: "600",
+                },
+              ],
+              "headline-md": [
+                "24px",
+                {
+                  lineHeight: "30px",
+                  letterSpacing: "-0.01em",
+                  fontWeight: "700",
+                },
+              ],
+              "label-sm": [
+                "12px",
+                {
+                  lineHeight: "16px",
+                  letterSpacing: "0.05em",
+                  fontWeight: "700",
+                },
+              ],
+              "body-md": [
+                "16px",
+                {
+                  lineHeight: "24px",
+                  letterSpacing: "0em",
+                  fontWeight: "400",
+                },
+              ],
+              "body-lg": [
+                "18px",
+                {
+                  lineHeight: "28px",
+                  letterSpacing: "0em",
+                  fontWeight: "400",
+                },
+              ],
+              "headline-lg-mobile": [
+                "28px",
+                {
+                  lineHeight: "34px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+              "headline-lg": [
+                "32px",
+                {
+                  lineHeight: "38px",
+                  letterSpacing: "-0.02em",
+                  fontWeight: "700",
+                },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #131318;
+        color: #e4e1e9;
+      }
+
+      /* Spring Physics Classes */
+      .spring-transition {
+        transition-property: all;
+        transition-duration: 300ms;
+        transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .neon-glow:hover {
+        box-shadow: 0 0 8px 2px rgba(124, 58, 237, 0.4);
+      }
+
+      .neon-glow-active {
+        box-shadow: 0 0 8px 2px rgba(124, 58, 237, 0.4);
+      }
+
+      /* Hide scrollbar for horizontal scrolling lists */
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body class="bg-surface text-on-surface font-body-md min-h-screen pb-32">
+    <!-- Top App Bar -->
+    <header
+      class="w-full top-0 bg-surface flex items-center px-container-margin h-16 w-full sticky z-50"
+    >
+      <button
+        aria-label="Go back"
+        class="text-primary hover:opacity-80 transition-all duration-200 active:scale-95 mr-4"
+      >
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <h1
+        class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface flex-1"
+      >
+        Book Appointment
+      </h1>
+    </header>
+    <main class="px-container-margin pt-stack-md flex flex-col gap-section-gap">
+      <!-- Select Date Section -->
+      <section>
+        <h2
+          class="font-headline-md text-headline-md text-on-surface mb-stack-md"
+        >
+          Select Date
+        </h2>
+        <div
+          class="bg-surface-container-low rounded-xl p-stack-lg border border-surface-variant relative overflow-hidden"
+        >
+          <!-- Subtle inner glow for premium feel -->
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent pointer-events-none"
+          ></div>
+          <div class="flex justify-between items-center mb-stack-md">
+            <h3 class="font-label-md text-label-md text-on-surface">
+              December 2024
+            </h3>
+            <div class="flex gap-stack-sm text-on-surface-variant">
+              <button class="hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-sm"
+                  >chevron_left</span
+                >
+              </button>
+              <button
+                class="text-secondary hover:text-secondary-fixed-dim transition-colors"
+              >
+                <span class="material-symbols-outlined text-sm"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-7 gap-stack-sm text-center mb-stack-sm">
+            <div class="font-label-sm text-label-sm text-on-surface-variant">
+              Mo
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant">
+              Tu
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant">
+              We
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant">
+              Th
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant">
+              Fr
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant">
+              Sa
+            </div>
+            <div class="font-label-sm text-label-sm text-on-surface-variant">
+              Su
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-7 gap-y-stack-md gap-x-stack-sm text-center font-body-md text-on-surface"
+          >
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              1
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              2
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              3
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              4
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              5
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              6
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              7
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              8
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              9
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              10
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              11
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              12
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              13
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              14
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              15
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              16
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              17
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              18
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              19
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              20
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              21
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              22
+            </div>
+            <div
+              class="py-1 bg-[#F59E0B] text-surface-container-lowest rounded-full font-bold shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+            >
+              23
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              24
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              25
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              26
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              27
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              28
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              29
+            </div>
+            <div
+              class="py-1 cursor-pointer hover:text-primary transition-colors"
+            >
+              30
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Select Hours Section -->
+      <section>
+        <div class="flex justify-between items-center mb-stack-md">
+          <h2 class="font-headline-md text-headline-md text-on-surface">
+            Select Hours
+          </h2>
+          <a
+            class="font-label-md text-label-md text-secondary hover:text-secondary-fixed-dim transition-colors"
+            href="#"
+            >See All</a
+          >
+        </div>
+        <div class="flex gap-stack-md overflow-x-auto hide-scrollbar pb-2">
+          <button
+            class="shrink-0 px-6 py-2 rounded-full border border-primary-container text-primary font-label-md text-label-md hover:bg-primary-container/10 transition-colors spring-transition"
+          >
+            $1
+          </button>
+          <button
+            class="shrink-0 px-6 py-2 rounded-full bg-primary-container text-white font-label-md text-label-md shadow-[0_0_15px_rgba(124,58,237,0.3)] spring-transition scale-105"
+          >
+            10:00
+          </button>
+          <button
+            class="shrink-0 px-6 py-2 rounded-full border border-primary-container text-primary font-label-md text-label-md hover:bg-primary-container/10 transition-colors spring-transition"
+          >
+            $1
+          </button>
+          <button
+            class="shrink-0 px-6 py-2 rounded-full border border-primary-container text-primary font-label-md text-label-md hover:bg-primary-container/10 transition-colors spring-transition"
+          >
+            $1
+          </button>
+          <button
+            class="shrink-0 px-6 py-2 rounded-full border border-primary-container text-primary font-label-md text-label-md hover:bg-primary-container/10 transition-colors spring-transition"
+          >
+            $1
+          </button>
+        </div>
+      </section>
+      <!-- Select Specialist Section -->
+      <section>
+        <div class="flex justify-between items-center mb-stack-md">
+          <h2 class="font-headline-md text-headline-md text-on-surface">
+            Select Specialist
+          </h2>
+          <a
+            class="font-label-md text-label-md text-secondary hover:text-secondary-fixed-dim transition-colors"
+            href="#"
+            >See All</a
+          >
+        </div>
+        <div
+          class="flex gap-stack-md overflow-x-auto hide-scrollbar pb-4 pt-2 px-1"
+        >
+          <!-- Selected Barber -->
+          <div
+            class="shrink-0 w-28 bg-surface-container-low rounded-xl border-2 border-primary-container p-stack-sm flex flex-col items-center shadow-[0_0_15px_rgba(124,58,237,0.3)] spring-transition -translate-y-1"
+          >
+            <div
+              class="w-20 h-20 rounded-xl overflow-hidden mb-stack-sm relative"
+            >
+              <img
+                alt="Portrait of a young male barber with styled hair"
+                class="w-full h-full object-cover"
+                data-alt="A striking portrait of a male barber with stylized dark hair, set against a dark studio background with rim lighting. The aesthetic is modern, high-contrast, and premium, fitting a high-end grooming app in dark mode. The lighting emphasizes his facial features while maintaining a moody, Midnight Edge vibe."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3vKMHh2dGgSM3lwSkWFnTeN1Ob-N_AtMptgacSEn94jnz8jlVfDG5xHc5Lg32gyW6UPvJERU7uhd_xTuHi_nkE5mgjKEIXhT6aC6yhRKezZ7z-ljyjfZe0u8NDTwF6neCcVJrz-1Lsk4EAZVUU1gKpZCRcBL3RkGsEKQepsH9ViR_PW-l5odBNVWRm0chKPWBxJqojiMgGiCzliiuUKb0noGkOJPaAV6cnDjuWg1PhjCLEaxF7T21Qde-uoRX9KVpJ3-LsXET3Jc"
+              />
+            </div>
+            <h3 class="font-label-md text-label-md text-primary">Nathan</h3>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">
+              Sr. Barber
+            </p>
+          </div>
+          <!-- Unselected Barbers -->
+          <div
+            class="shrink-0 w-28 bg-surface-container-low rounded-xl border border-surface-variant p-stack-sm flex flex-col items-center hover:border-primary/50 transition-colors cursor-pointer spring-transition hover:-translate-y-1"
+          >
+            <div class="w-20 h-20 rounded-xl overflow-hidden mb-stack-sm">
+              <img
+                alt="Portrait of a female hair stylist"
+                class="w-full h-full object-cover"
+                data-alt="A portrait of a female hair stylist with subtle warm lighting, set against a deep gray background. The aesthetic is clean, professional, and sophisticated, aligning with a premium dark mode grooming application. The mood is welcoming yet highly focused on quality styling."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEWB9iwyfbcv7iTfZj9DzwvE8kDYcIJWiVwAG_I8g9puQc1oFdG-O2vo7zaXSly6lSgDS5dsPkf2CSx9V_giVUYucXFbSCKnBJoY9-dvu7ShivYUth9tsy0OV6WWwOTY4fogzVvDyJFtdYYdlKuYt18A_tIvhPa8Wtm9SFYhOPjb54kSbQxungdMdUo0huGjnY5vdi0fMaDzCVpHg3sjI1aGv4cWBOPtxeiZ5pGaa39frZ_wQqxHVPcNs1na9c7B7nhrj1pDhAEX4"
+              />
+            </div>
+            <h3 class="font-label-md text-label-md text-on-surface">Jenny</h3>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">
+              Hair Stylist
+            </p>
+          </div>
+          <div
+            class="shrink-0 w-28 bg-surface-container-low rounded-xl border border-surface-variant p-stack-sm flex flex-col items-center hover:border-primary/50 transition-colors cursor-pointer spring-transition hover:-translate-y-1"
+          >
+            <div class="w-20 h-20 rounded-xl overflow-hidden mb-stack-sm">
+              <img
+                alt="Portrait of a female makeup artist"
+                class="w-full h-full object-cover"
+                data-alt="A close-up portrait of a female makeup artist with flawless, glowing skin, dramatically lit against a dark background. The lighting emphasizes modern beauty standards, fitting a high-end salon interface. The overall feel is chic, polished, and perfectly suited for a Midnight Edge aesthetic."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJNMufXJP2UCtFmPEePp8mEhPjcwRTwTMQ0QseC8z8Qj9-nj3Wa4CrdGZ9Y-oJxyQJ3kMXqNE24DaXqx3G6gGOsbYpdiTj86vXTmZpdTMslFA8XGUd20yKc4SJYuL8xcTgH6hD2aX2NHRKFX8PX_K1vv8Z1LOtcd4x6QfWlT2Sv03UeKPBmIc5L1wfejOYX5rBn761GJljpYXXMTk85Um2e7CY7RV8Ui5U1APu0nfY3FeYUy0469ahMjp4_vcbT2VmC2DZ7iMFm3M"
+              />
+            </div>
+            <h3 class="font-label-md text-label-md text-on-surface">Sarah</h3>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">
+              Makeup Artist
+            </p>
+          </div>
+          <div
+            class="shrink-0 w-28 bg-surface-container-low rounded-xl border border-surface-variant p-stack-sm flex flex-col items-center hover:border-primary/50 transition-colors cursor-pointer spring-transition hover:-translate-y-1"
+          >
+            <div class="w-20 h-20 rounded-xl overflow-hidden mb-stack-sm">
+              <img
+                alt="Portrait of a male barber"
+                class="w-full h-full object-cover"
+                data-alt="A moody, high-contrast portrait of a male barber with a short beard, illuminated by soft blue and violet rim lights. The setting is dark and cinematic, conveying a premium grooming experience. The visual tone is deeply aligned with a sleek, tech-forward barbershop environment."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZywFl-FnyEZACECrDMKbXmkJOkTxPu1h2wVL2t1xM89kTdJQ362WYBTM8A7FxIP71_FFZfN8bqXfWb3NgfnKakOnrBNHeqaeoP2md8CVBXlBslQZB77PPlyBmuNLM6P8RggNapoaUNyb7v83xDWHA6exqxJPyoBnQlfyZ3u3gQ32CYoF_5VJt0eT0YrqwqVbZmBQZ1NJJIZsGGAx2KNuLy1IaP-Wkm0qPK8xsUigCYRnFs53Gvcq-oGanqajNbVKsb41qVA7LsP8"
+              />
+            </div>
+            <h3 class="font-label-md text-label-md text-on-surface">Mike</h3>
+            <p class="font-label-sm text-label-sm text-on-surface-variant">
+              Sx Barber
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Bottom Action Area -->
+    <div
+      class="fixed bottom-0 left-0 w-full p-container-margin bg-surface/80 backdrop-blur-md border-t border-surface-variant/20 z-50 rounded-t-2xl pb-8 pt-4"
+    >
+      <button
+        class="w-full bg-primary-container hover:bg-[#6D28D9] text-white font-label-md text-label-md py-4 rounded-full shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all active:scale-95 spring-transition"
+      >
+        Continue
+      </button>
+    </div>
+  </body>
+</html>
