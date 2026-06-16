@@ -7,7 +7,6 @@ import {
   BookingContinueBar,
   BookingSectionHeader,
   BookingSpecialistCarousel,
-  BookingSuccessOverlay,
   BookingTimeSlotCarousel,
   BOOKING_CONTINUE_BAR_APPROX_HEIGHT,
 } from "@/components/booking";
@@ -75,11 +74,6 @@ const BookAppointmentScreen = ({ route }: Props): React.JSX.Element => {
       <View style={styles.footer}>
         <BookingContinueBar onContinue={booking.onContinue} />
       </View>
-
-      <BookingSuccessOverlay
-        visible={booking.isSuccessVisible}
-        onDismiss={booking.onDismissSuccess}
-      />
     </View>
   );
 };

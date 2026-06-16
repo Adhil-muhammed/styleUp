@@ -4,7 +4,8 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { BOOK_TIME_SLOTS, type TimeSlotOption } from "@/data/bookMock";
 import { getShopProfile, type ShopSpecialist } from "@/data/barberProfileMock";
 import type { RootStackParamList } from "@/navigation/types";
-import { buildStubAvailableDates, startOfToday } from "@/utils/bookingCalendar";
+import { buildStubAvailableDates, startOfToday, toYMD } from "@/utils/bookingCalendar";
+import { useBookingDraftStore } from "@/store/bookingDraftStore";
 
 const STUB_AVAILABILITY_DAYS = 14;
 
@@ -15,19 +16,18 @@ export interface UseBookAppointmentScreenResult {
   availableDates: readonly string[];
   selectedTimeId: string;
   selectedSpecialistId: string;
-  isSuccessVisible: boolean;
   onGoBack: () => void;
   onSelectDate: (date: Date) => void;
   onSelectTime: (timeId: string) => void;
   onSelectSpecialist: (specialistId: string) => void;
   onContinue: () => void;
-  onDismissSuccess: () => void;
   onSeeAllTimes: () => void;
   onSeeAllSpecialists: () => void;
 }
 
 export function useBookAppointmentScreen(shopId: string): UseBookAppointmentScreenResult {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const setAppointmentDetails = useBookingDraftStore((s) => s.setAppointmentDetails);
 
   const shop = useMemo(() => getShopProfile(shopId), [shopId]);
   const defaultSpecialistId = shop.specialists[0]?.id ?? "";
@@ -39,7 +39,6 @@ export function useBookAppointmentScreen(shopId: string): UseBookAppointmentScre
   const [selectedDate, setSelectedDate] = useState(() => startOfToday());
   const [selectedTimeId, setSelectedTimeId] = useState(BOOK_TIME_SLOTS[0]?.id ?? "");
   const [selectedSpecialistId, setSelectedSpecialistId] = useState(defaultSpecialistId);
-  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
 
   const onGoBack = useCallback((): void => {
     navigation.goBack();
@@ -58,13 +57,13 @@ export function useBookAppointmentScreen(shopId: string): UseBookAppointmentScre
   }, []);
 
   const onContinue = useCallback((): void => {
-    setIsSuccessVisible(true);
-  }, []);
-
-  const onDismissSuccess = useCallback((): void => {
-    setIsSuccessVisible(false);
-    navigation.goBack();
-  }, [navigation]);
+    setAppointmentDetails({
+      selectedDateYmd: toYMD(selectedDate),
+      selectedTimeId,
+      selectedSpecialistId,
+    });
+    navigation.navigate("PaymentMethod", { shopId });
+  }, [navigation, selectedDate, selectedSpecialistId, selectedTimeId, setAppointmentDetails, shopId]);
 
   const onSeeAllTimes = useCallback((): void => {
     // Stub for future full time-slot picker.
@@ -81,13 +80,11 @@ export function useBookAppointmentScreen(shopId: string): UseBookAppointmentScre
     availableDates,
     selectedTimeId,
     selectedSpecialistId,
-    isSuccessVisible,
     onGoBack,
     onSelectDate,
     onSelectTime,
     onSelectSpecialist,
     onContinue,
-    onDismissSuccess,
     onSeeAllTimes,
     onSeeAllSpecialists,
   };

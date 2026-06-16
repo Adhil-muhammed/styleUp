@@ -12,6 +12,9 @@ export type RootStackParamList = {
   BarberProfile: { shopId: string };
   PackageDetails: { shopId: string; packageId: string };
   BookAppointment: { shopId: string };
+  PaymentMethod: { shopId: string };
+  PaymentSummary: { shopId: string };
+  PaymentSuccess: { shopId: string };
 };
 
 export type AuthStackParamList = {
