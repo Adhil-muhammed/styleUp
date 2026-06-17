@@ -48,10 +48,7 @@ const PackageOfferCard = ({
       >
         <Image
           source={{ uri: shopPackage.imageUri }}
-          style={[
-            styles.image,
-            { borderRadius: theme.borderRadius.lg },
-          ]}
+          style={[styles.image, { borderRadius: theme.borderRadius.lg }]}
         />
       </Pressable>
 
@@ -83,7 +80,7 @@ const PackageOfferCard = ({
         <View style={styles.footer}>
           <Price
             amountMinor={shopPackage.priceCents}
-            variant="bodyLg"
+            variant="labelMd"
             style={{ fontWeight: "700" }}
           />
 
@@ -104,7 +101,11 @@ const PackageOfferCard = ({
             <Text
               style={[
                 toTextStyle(theme.typography.labelSm),
-                { color: theme.colors.text.onPrimary, fontWeight: "600", textTransform: "none" },
+                {
+                  color: theme.colors.text.onPrimary,
+                  fontWeight: "600",
+                  textTransform: "none",
+                },
               ]}
             >
               Book Now

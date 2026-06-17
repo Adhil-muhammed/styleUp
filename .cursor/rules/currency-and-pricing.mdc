@@ -1,0 +1,78 @@
+---
+description: "Currency storage, formatting, and display — minor units, useCurrency, Price component."
+globs: ["src/components/**/*.tsx", "src/screens/**/*.tsx", "src/hooks/**/*.ts", "src/data/**/*.ts"]
+alwaysApply: false
+---
+
+# Currency & Pricing
+
+All monetary values use the centralized stack in [`src/utils/currency.ts`](src/utils/currency.ts), [`src/hooks/useCurrency.ts`](src/hooks/useCurrency.ts), and [`src/components/common/Price.tsx`](src/components/common/Price.tsx). Locale and currency come from [`src/store/settingsStore.ts`](src/store/settingsStore.ts) via `useCurrency` — never read the settings store directly for display.
+
+## Minor Units Only
+
+Store and pass amounts as **integers in minor units** (paise/cents). Use field names `priceCents`, `amountCents`, or prop `amountMinor`.
+
+- Never store display strings (`"$42.00"`, `"₹42"`) or major-unit floats (`42.0`) in mocks, stores, or API types.
+- Example: Quiff = `priceCents: 4200` → displays as ₹42.00.
+
+## Display — Component vs Hook
+
+| Context | Use | Import |
+|---------|-----|--------|
+| Rendered price in JSX | `<Price amountMinor={…} />` | `@/components/common` |
+| Button label, template string, non-`Text` UI | `const { format } = useCurrency()` | `@/hooks/useCurrency` |
+| Unit tests for formatting | `formatCurrency` from util | `@/utils/currency` |
+
+**Forbidden in components/screens:** hardcoded `$`, `₹`, `€`, `£`; manual `toFixed(2)`; calling `formatCurrency` or `useSettingsStore` for display.
+
+## `Price` Component
+
+- Required prop: `amountMinor` (not `price`, not `amount`).
+- Optional: `variant`, `color`, `currency` override, `prefix`.
+- Default styling: amber accent via theme — override `color` only when design requires (e.g. primary text in breakdown rows).
+- Use `prefix` only for semantic modifiers (`"-"` for discounts). **Do not** use `prefix="+ "` for add-on pricing; show full service price via `priceCents`.
+
+## Hooks & Aggregation
+
+- Hooks sum cents, then format: `format(sumVariantPrices(ids))` or `format(computeTotalCents(items))`.
+- Expose **numbers** (`estimateCents`, `totalCents`) from hooks; let components call `Price` or `format`.
+- Single source of truth per item: use `priceCents` (full price), not separate add-on fields.
+
+## Mock & Data Layer
+
+- Mock interfaces use `priceCents` / `amountCents` (see [`serviceVariantMock.ts`](src/data/serviceVariantMock.ts), [`paymentSummaryMock.ts`](src/data/paymentSummaryMock.ts)).
+- Provide small pure helpers (`sumVariantPrices`, `computeTotalCents`) in data modules — hooks import them; components do not.
+
+## Settings Store Boundary
+
+- Components and screens **must not** read `useSettingsStore` for formatting — use `useCurrency()` or `<Price />`.
+- Only settings UI or app bootstrap may call `setCurrency` / `setLocale`.
+
+## Examples
+
+```tsx
+// BAD — hardcoded symbol
+<Text>₹42.00</Text>
+
+// GOOD
+<Price amountMinor={4200} />
+```
+
+```tsx
+// BAD — hardcoded symbol in CTA
+<Button title={`Book Now - ₹${total}`} />
+
+// GOOD — hook builds label
+const { format } = useCurrency();
+const label = `Book Now - ${format(totalCents)}`;
+```
+
+```tsx
+// BAD — add-on field and + prefix
+addOnPriceCents: 600
+<Price amountMinor={addOnPriceCents} prefix="+ " />
+
+// GOOD — full price everywhere
+priceCents: 4200
+<Price amountMinor={priceCents} />
+```

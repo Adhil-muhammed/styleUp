@@ -17,7 +17,7 @@ const Price = ({
   amountMinor,
   currency,
   prefix,
-  variant = "labelMd",
+  variant = "labelSm",
   color,
   style,
 }: PriceProps): React.JSX.Element => {

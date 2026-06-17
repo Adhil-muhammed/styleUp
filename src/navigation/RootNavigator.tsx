@@ -45,7 +45,11 @@ const RootNavigator: React.FC = () => {
       <Stack.Screen
         name="PaymentMethod"
         component={PaymentMethodScreen}
-        options={{ animation: "slide_from_right" }}
+        options={{
+          presentation: "transparentModal",
+          animation: "slide_from_bottom",
+          contentStyle: { backgroundColor: "transparent" },
+        }}
       />
       <Stack.Screen
         name="PaymentSummary"

@@ -18,10 +18,15 @@ const PaymentMethodOptionRow = ({
   onPress,
 }: PaymentMethodOptionRowProps): React.JSX.Element => {
   const { theme } = useTheme();
+  const isCard = option.kind === "saved_card";
 
   const handlePress = useCallback((): void => {
     onPress(option.id);
   }, [onPress, option.id]);
+
+  const selectedLabelColor = theme.colors.primary.default;
+  const unselectedLabelColor = theme.colors.text.secondary;
+  const labelColor = isSelected ? selectedLabelColor : unselectedLabelColor;
 
   return (
     <Pressable
@@ -33,9 +38,9 @@ const PaymentMethodOptionRow = ({
         style={[
           styles.row,
           {
-            backgroundColor: theme.colors.depth.level1,
+            backgroundColor: theme.colors.depth.level2,
             borderColor: isSelected
-              ? theme.colors.accent.amber
+              ? theme.colors.primary.default
               : theme.colors.border.level1,
             borderRadius: theme.borderRadius.xl,
             borderWidth: isSelected ? 2 : 1,
@@ -45,13 +50,13 @@ const PaymentMethodOptionRow = ({
       >
         <View style={styles.left}>
           <PaymentMethodIcon kind={option.kind} />
-          {option.kind === "saved_card" && option.lastFour !== undefined ? (
+          {isCard && option.lastFour !== undefined ? (
             <View style={styles.cardLabelRow}>
               <Text
                 style={[
                   toTextStyle(theme.typography.labelMd),
                   styles.maskedDigits,
-                  { color: theme.colors.text.secondary, textTransform: "none" },
+                  { color: labelColor, textTransform: "none" },
                 ]}
               >
                 •••• •••• ••••
@@ -59,7 +64,7 @@ const PaymentMethodOptionRow = ({
               <Text
                 style={[
                   toTextStyle(theme.typography.labelMd),
-                  { color: theme.colors.text.primary, textTransform: "none", fontWeight: "500" },
+                  { color: labelColor, textTransform: "none", fontWeight: "500" },
                 ]}
               >
                 {option.lastFour}
@@ -69,7 +74,7 @@ const PaymentMethodOptionRow = ({
             <Text
               style={[
                 toTextStyle(theme.typography.labelMd),
-                { color: theme.colors.text.primary, textTransform: "none", fontWeight: "500" },
+                { color: labelColor, textTransform: "none", fontWeight: "500" },
               ]}
             >
               {option.label}

@@ -15,6 +15,7 @@ const PaymentSummaryMethodCard = ({
   onChangePress,
 }: PaymentSummaryMethodCardProps): React.JSX.Element => {
   const { theme } = useTheme();
+  const isCard = paymentOption.kind === "saved_card";
 
   const handleChangePress = useCallback((): void => {
     onChangePress();
@@ -34,7 +35,7 @@ const PaymentSummaryMethodCard = ({
     >
       <View style={[styles.left, { gap: theme.spacing.stackMd }]}>
         <PaymentMethodIcon kind={paymentOption.kind} />
-        {paymentOption.kind === "saved_card" && paymentOption.lastFour !== undefined ? (
+        {isCard && paymentOption.lastFour !== undefined ? (
           <View style={[styles.cardLabelRow, { gap: theme.spacing.stackSm }]}>
             <Text
               style={[
@@ -88,7 +89,7 @@ const PaymentSummaryMethodCard = ({
         <Text
           style={[
             toTextStyle(theme.typography.labelMd),
-            { color: theme.colors.accent.amber, textTransform: "none" },
+            { color: theme.colors.primary.default, textTransform: "none" },
           ]}
         >
           Change

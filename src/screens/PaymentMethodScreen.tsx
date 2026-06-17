@@ -1,21 +1,20 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  BookingAppointmentHeader,
-  BookingContinueBar,
-  PaymentAddCardButton,
+  ConfirmBookingBar,
   PaymentMethodOptionRow,
-  BOOKING_CONTINUE_BAR_APPROX_HEIGHT,
 } from "@/components/booking";
 import { usePaymentMethodScreen } from "@/hooks/usePaymentMethodScreen";
 import { useTheme } from "@/hooks/useTheme";
+import { toTextStyle } from "@/config/theme";
 import type { RootStackScreenProps } from "@/navigation/types";
 
 type Props = RootStackScreenProps<"PaymentMethod">;
 
-const FOOTER_EXTRA_PADDING = 16;
-const ADD_CARD_TOP_MARGIN = 32;
+const SHEET_HANDLE_WIDTH = 40;
+const SHEET_HANDLE_HEIGHT = 4;
 
 const PaymentMethodScreen = ({ route }: Props): React.JSX.Element => {
   const { theme } = useTheme();
@@ -23,44 +22,79 @@ const PaymentMethodScreen = ({ route }: Props): React.JSX.Element => {
   const { shopId } = route.params;
   const payment = usePaymentMethodScreen(shopId);
 
-  const scrollBottomPadding =
-    BOOKING_CONTINUE_BAR_APPROX_HEIGHT +
-    FOOTER_EXTRA_PADDING +
-    insets.bottom +
-    theme.spacing.stackMd * 2;
-
   return (
-    <View style={[styles.root, { backgroundColor: theme.colors.depth.level0 }]}>
-      <BookingAppointmentHeader title="Payment Methods" onGoBack={payment.onGoBack} />
+    <View style={styles.root} pointerEvents="box-none">
+      <Pressable
+        style={styles.scrimPressable}
+        onPress={payment.onGoBack}
+        accessibilityRole="button"
+        accessibilityLabel="Dismiss payment method"
+      >
+        <BlurView
+          intensity={theme.glassmorphism.blur}
+          tint="dark"
+          style={StyleSheet.absoluteFill}
+        />
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: theme.colors.nav.surfaceScrim },
+          ]}
+        />
+      </Pressable>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.scrollContent,
+      <View
+        style={[
+          styles.sheet,
           {
+            backgroundColor: theme.colors.nav.surface,
+            borderTopLeftRadius: theme.borderRadius.xl,
+            borderTopRightRadius: theme.borderRadius.xl,
+            paddingBottom: insets.bottom + theme.spacing.stackMd,
             paddingHorizontal: theme.spacing.containerMargin,
-            paddingTop: theme.spacing.stackLg,
-            paddingBottom: scrollBottomPadding,
-            gap: theme.spacing.stackMd,
           },
         ]}
       >
-        {payment.paymentOptions.map((option) => (
-          <PaymentMethodOptionRow
-            key={option.id}
-            option={option}
-            isSelected={option.id === payment.selectedPaymentId}
-            onPress={payment.onSelectPayment}
+        <View style={styles.handleRow}>
+          <View
+            style={[
+              styles.handle,
+              {
+                backgroundColor: theme.colors.border.level1,
+                borderRadius: theme.borderRadius.full,
+              },
+            ]}
           />
-        ))}
-
-        <View style={{ marginTop: ADD_CARD_TOP_MARGIN - theme.spacing.stackMd }}>
-          <PaymentAddCardButton onPress={payment.onAddNewCard} />
         </View>
-      </ScrollView>
 
-      <View style={styles.footer}>
-        <BookingContinueBar onContinue={payment.onContinue} />
+        <Text
+          style={[
+            toTextStyle(theme.typography.headlineMd),
+            styles.title,
+            { color: theme.colors.text.primary },
+          ]}
+        >
+          Payment Method
+        </Text>
+
+        <View style={[styles.options, { gap: theme.spacing.stackMd }]}>
+          {payment.paymentOptions.map((option) => (
+            <PaymentMethodOptionRow
+              key={option.id}
+              option={option}
+              isSelected={option.id === payment.selectedPaymentId}
+              onPress={payment.onSelectPayment}
+            />
+          ))}
+        </View>
+
+        <View style={{ marginTop: theme.spacing.sectionGap }}>
+          <ConfirmBookingBar
+            onConfirm={payment.onContinue}
+            label="Continue"
+            showArrow={false}
+          />
+        </View>
       </View>
     </View>
   );
@@ -69,15 +103,32 @@ const PaymentMethodScreen = ({ route }: Props): React.JSX.Element => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    justifyContent: "flex-end",
   },
-  scrollContent: {},
-  footer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 30,
+  scrimPressable: {
+    ...StyleSheet.absoluteFill,
   },
+  sheet: {
+    paddingTop: 12,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  handleRow: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  handle: {
+    width: SHEET_HANDLE_WIDTH,
+    height: SHEET_HANDLE_HEIGHT,
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  options: {},
 });
 
 export default PaymentMethodScreen;
