@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { Price } from "@/components/common";
 import { useTheme } from "@/hooks/useTheme";
 import { focusGlowStyle, toTextStyle } from "@/config/theme";
 import type { BarberServiceOption } from "@/data/discoverMock";
@@ -112,15 +113,11 @@ const BarberServiceRow = ({
         )}
       </View>
 
-      <Text
-        style={[
-          toTextStyle(theme.typography.labelMd),
-          styles.price,
-          { color: theme.colors.text.primary },
-        ]}
-      >
-        {service.price}
-      </Text>
+      <Price
+        amountMinor={service.priceCents}
+        color={theme.colors.text.primary}
+        style={{ fontWeight: "700" }}
+      />
     </Pressable>
   );
 };
@@ -154,9 +151,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
     marginTop: 4,
-  },
-  price: {
-    fontWeight: "700",
   },
 });
 

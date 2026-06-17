@@ -239,7 +239,8 @@ const DiscoverMap = forwardRef<DiscoverMapHandle, DiscoverMapProps>(
             >
               <MapPin
                 avatarUri={pin.avatarUri}
-                label={pin.label}
+                {...(pin.label !== undefined ? { label: pin.label } : {})}
+                {...(pin.priceCents !== undefined ? { priceCents: pin.priceCents } : {})}
                 variant={pin.variant}
                 size={pin.size}
               />

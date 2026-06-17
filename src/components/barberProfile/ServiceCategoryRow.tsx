@@ -1,14 +1,20 @@
 import React, { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { GlassPanel } from "@/components/common";
+import { GlassPanel, Price } from "@/components/common";
 import { useTheme } from "@/hooks/useTheme";
 import { toTextStyle } from "@/config/theme";
 import type { ServiceCategory } from "@/data/barberProfileMock";
 
+export interface SelectedServiceVariantSummary {
+  title: string;
+  priceCents: number;
+}
+
 interface ServiceCategoryRowProps {
   category: ServiceCategory;
   onPress: (categoryId: string) => void;
+  selectedVariant?: SelectedServiceVariantSummary;
 }
 
 const CHEVRON_SIZE = 18;
@@ -16,8 +22,10 @@ const CHEVRON_SIZE = 18;
 const ServiceCategoryRow = ({
   category,
   onPress,
+  selectedVariant,
 }: ServiceCategoryRowProps): React.JSX.Element => {
   const { theme } = useTheme();
+  const hasSelection = selectedVariant !== undefined;
 
   const handlePress = useCallback((): void => {
     onPress(category.id);
@@ -31,40 +39,57 @@ const ServiceCategoryRow = ({
     >
       {({ pressed }) => (
         <GlassPanel
-          selected={pressed}
+          selected={hasSelection || pressed}
           style={[
             styles.panel,
-            pressed && { borderColor: theme.colors.primary.default },
+            hasSelection && {
+              borderColor: theme.colors.accent.amber,
+            },
+            pressed &&
+              !hasSelection && { borderColor: theme.colors.primary.default },
           ]}
         >
-          <View
-            style={[
-              styles.content,
-              { padding: theme.spacing.stackMd },
-            ]}
-          >
+          <View style={[styles.content, { padding: theme.spacing.stackMd }]}>
             <Text
               style={[
                 toTextStyle(theme.typography.bodyMd),
-                { color: theme.colors.text.primary },
+                {
+                  color: hasSelection
+                    ? theme.colors.text.secondary
+                    : theme.colors.text.primary,
+                },
               ]}
             >
               {category.name}
             </Text>
 
             <View style={styles.trailing}>
-              <Text
-                style={[
-                  toTextStyle(theme.typography.labelMd),
-                  { color: theme.colors.text.secondary },
-                ]}
-              >
-                {category.variantCount} types
-              </Text>
+              {hasSelection ? (
+                <View style={styles.selectionCol}>
+                  <Text
+                    style={[
+                      toTextStyle(theme.typography.bodyMd),
+                      { color: theme.colors.text.primary },
+                    ]}
+                  >
+                    {selectedVariant.title}
+                  </Text>
+                  <Price amountMinor={selectedVariant.priceCents} />
+                </View>
+              ) : (
+                <Text
+                  style={[
+                    toTextStyle(theme.typography.labelSm),
+                    { color: theme.colors.text.secondary },
+                  ]}
+                >
+                  {category.variantCount} types
+                </Text>
+              )}
               <MaterialIcons
                 name="chevron-right"
                 size={CHEVRON_SIZE}
-                color={theme.colors.primary.default}
+                color={theme.colors.accent.amber}
               />
             </View>
           </View>
@@ -87,6 +112,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+  },
+  selectionCol: {
+    alignItems: "flex-end",
+    gap: 2,
   },
 });
 

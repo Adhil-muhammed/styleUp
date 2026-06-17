@@ -1,14 +1,10 @@
 import React, { useCallback } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { GlassPanel } from "@/components/common";
+import { GlassPanel, Price } from "@/components/common";
+import Typography from "@/components/common/Typography";
 import { useTheme } from "@/hooks/useTheme";
-import { toTextStyle } from "@/config/theme";
-import {
-  formatDuration,
-  formatPrice,
-  type BookServiceOption,
-} from "@/data/bookMock";
+import { formatDuration, type BookServiceOption } from "@/data/bookMock";
 
 interface BookingServiceOptionRowProps {
   service: BookServiceOption;
@@ -35,22 +31,23 @@ const BookingServiceOptionRow = ({
       <GlassPanel selected={isSelected} style={styles.panel}>
         <View style={[styles.content, { padding: theme.spacing.stackMd }]}>
           <View style={styles.textCol}>
-            <Text
-              style={[
-                toTextStyle(theme.typography.bodyMd),
-                { color: theme.colors.text.primary },
-              ]}
-            >
+            <Typography variant="bodyMd" color={theme.colors.text.primary}>
               {service.title}
-            </Text>
-            <Text
-              style={[
-                toTextStyle(theme.typography.labelSm),
-                { color: theme.colors.text.secondary, textTransform: "none" },
-              ]}
-            >
-              {formatDuration(service.durationMinutes)} • {formatPrice(service.priceCents)}
-            </Text>
+            </Typography>
+            <View style={styles.metaRow}>
+              <Typography
+                variant="labelSm"
+                color={theme.colors.text.secondary}
+                style={{ textTransform: "none" }}
+              >
+                {formatDuration(service.durationMinutes)} •{" "}
+              </Typography>
+              <Price
+                amountMinor={service.priceCents}
+                variant="labelSm"
+                color={theme.colors.text.secondary}
+              />
+            </View>
           </View>
           <MaterialIcons
             name={isSelected ? "check-circle" : "radio-button-unchecked"}
@@ -79,6 +76,11 @@ const styles = StyleSheet.create({
   textCol: {
     flex: 1,
     gap: 4,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
   },
 });
 

@@ -32,3 +32,10 @@ export {
 export { default as BookingDetailsCard } from "./BookingDetailsCard";
 export type { BookingDetailItem } from "./BookingDetailsCard";
 export { default as PriceBreakdownCard } from "./PriceBreakdownCard";
+export { default as GenderSegmentedControl } from "./GenderSegmentedControl";
+export { default as ServiceVariantCard } from "./ServiceVariantCard";
+export { default as ServiceRadioIndicator } from "./ServiceRadioIndicator";
+export {
+  default as ServiceSelectionFooter,
+  SERVICE_SELECTION_FOOTER_APPROX_HEIGHT,
+} from "./ServiceSelectionFooter";

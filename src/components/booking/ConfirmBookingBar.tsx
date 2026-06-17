@@ -8,6 +8,7 @@ interface ConfirmBookingBarProps {
   onConfirm: () => void;
   label?: string;
   showArrow?: boolean;
+  disabled?: boolean;
 }
 
 /** paddingVertical 16 + labelMd lineHeight 20 + paddingVertical 16 */
@@ -17,36 +18,49 @@ const ConfirmBookingBar = ({
   onConfirm,
   label = "Confirm Booking",
   showArrow = true,
+  disabled = false,
 }: ConfirmBookingBarProps): React.JSX.Element => {
   const { theme } = useTheme();
 
   const handleConfirm = useCallback((): void => {
+    if (disabled) {
+      return;
+    }
+
     onConfirm();
-  }, [onConfirm]);
+  }, [disabled, onConfirm]);
 
   return (
     <View style={styles.wrapper}>
       <Pressable
         onPress={handleConfirm}
+        disabled={disabled}
         style={({ pressed }) => [
           styles.button,
           {
-            backgroundColor: pressed
-              ? theme.colors.primary.active
-              : theme.colors.primary.default,
+            backgroundColor: disabled
+              ? theme.colors.depth.level2
+              : pressed
+                ? theme.colors.primary.active
+                : theme.colors.primary.default,
             borderRadius: theme.borderRadius.full,
             shadowColor: theme.colors.primary.default,
             shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.4,
-            shadowRadius: 20,
-            transform: [{ scale: pressed ? 0.95 : 1 }],
+            shadowOpacity: disabled ? 0 : 0.4,
+            shadowRadius: disabled ? 0 : 20,
+            opacity: disabled ? 0.5 : 1,
+            transform: [{ scale: disabled || !pressed ? 1 : 0.95 }],
           },
         ]}
       >
         <Text
           style={[
             toTextStyle(theme.typography.labelMd),
-            { color: theme.colors.text.onPrimary },
+            {
+              color: disabled
+                ? theme.colors.text.disabled
+                : theme.colors.text.onPrimary,
+            },
           ]}
         >
           {label}
@@ -55,7 +69,11 @@ const ConfirmBookingBar = ({
           <MaterialIcons
             name="arrow-forward"
             size={22}
-            color={theme.colors.text.onPrimary}
+            color={
+              disabled
+                ? theme.colors.text.disabled
+                : theme.colors.text.onPrimary
+            }
           />
         ) : null}
       </Pressable>

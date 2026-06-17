@@ -10,7 +10,7 @@ import {
   type ShopProfile,
 } from "@/data/barberProfileMock";
 import { useBookingDraftStore } from "@/store/bookingDraftStore";
-import { navigateToBookAppointment } from "@/utils/navigateToBookAppointment";
+import { navigateToOurServices } from "@/utils/navigateToOurServices";
 import type { RootStackParamList } from "@/navigation/types";
 
 export interface UseBarberProfileResult {
@@ -58,7 +58,7 @@ export function useBarberProfile(shopId: string): UseBarberProfileResult {
   }, [navigation]);
 
   const navigateToBook = useCallback((): void => {
-    navigateToBookAppointment(navigation, setDraftFromDiscover, shop.id);
+    navigateToOurServices(navigation, setDraftFromDiscover, shop.id);
   }, [navigation, setDraftFromDiscover, shop.id]);
 
   const onBookNow = useCallback((): void => {

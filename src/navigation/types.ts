@@ -11,6 +11,8 @@ export type RootStackParamList = {
   Modal: { modalType: ModalType };
   BarberProfile: { shopId: string };
   PackageDetails: { shopId: string; packageId: string };
+  OurServices: { shopId: string };
+  ServiceVariants: { shopId: string; categoryId: string };
   BookAppointment: { shopId: string };
   PaymentMethod: { shopId: string };
   PaymentSummary: { shopId: string };

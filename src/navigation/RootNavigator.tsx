@@ -4,6 +4,8 @@ import AppNavigator from "./AppNavigator";
 import BarberProfileScreen from "../screens/BarberProfileScreen";
 import PackageDetailsScreen from "../screens/PackageDetailsScreen";
 import BookAppointmentScreen from "../screens/BookAppointmentScreen";
+import OurServicesScreen from "../screens/OurServicesScreen";
+import ServiceVariantScreen from "../screens/ServiceVariantScreen";
 import PaymentMethodScreen from "../screens/PaymentMethodScreen";
 import PaymentSummaryScreen from "../screens/PaymentSummaryScreen";
 import PaymentSuccessScreen from "../screens/PaymentSuccessScreen";
@@ -23,6 +25,16 @@ const RootNavigator: React.FC = () => {
       <Stack.Screen
         name="PackageDetails"
         component={PackageDetailsScreen}
+        options={{ animation: "slide_from_right" }}
+      />
+      <Stack.Screen
+        name="OurServices"
+        component={OurServicesScreen}
+        options={{ animation: "slide_from_right" }}
+      />
+      <Stack.Screen
+        name="ServiceVariants"
+        component={ServiceVariantScreen}
         options={{ animation: "slide_from_right" }}
       />
       <Stack.Screen

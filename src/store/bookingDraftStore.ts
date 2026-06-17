@@ -15,6 +15,7 @@ export interface BookingDraft {
   selectedDateYmd: string;
   selectedTimeId: string;
   selectedSpecialistId: string;
+  selectedVariants: Record<string, string>;
 }
 
 export interface SetDraftFromDiscoverInput {
@@ -41,6 +42,7 @@ export interface BookingDraftStoreActions {
   setSelectedShopPin: (shopPinId: string, barber: BookBarberSummary) => void;
   setAppointmentDetails: (input: SetAppointmentDetailsInput) => void;
   setPaymentId: (paymentId: string) => void;
+  setSelectedVariant: (categoryId: string, variantId: string) => void;
   clearDraft: () => void;
 }
 
@@ -72,7 +74,26 @@ export const useBookingDraftStore = create<BookingDraftStore>()((set, get) => ({
         timeFilterId: input.timeFilterId,
         profileId: input.profileId,
         paymentId: input.paymentId,
+        selectedVariants: {},
         ...appointmentDefaults,
+      },
+    });
+  },
+
+  setSelectedVariant: (categoryId: string, variantId: string): void => {
+    const currentDraft = get().draft;
+
+    if (currentDraft === null) {
+      return;
+    }
+
+    set({
+      draft: {
+        ...currentDraft,
+        selectedVariants: {
+          ...currentDraft.selectedVariants,
+          [categoryId]: variantId,
+        },
       },
     });
   },

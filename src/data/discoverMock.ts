@@ -6,7 +6,8 @@ export interface MapPinData {
   id: string;
   name?: string;
   avatarUri: string;
-  label: string;
+  label?: string;
+  priceCents?: number;
   variant: MapPinVariant;
   latitude: number;
   longitude: number;
@@ -65,7 +66,7 @@ export const DEMO_MAP_SHOPS: MapPinData[] = [
     name: "StyleQuest Barber — Central",
     avatarUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuA_P62rMQpF4Xq17wHOXrvrqK9QaAmGEnokmHSzGEueJHFhPrpJtAxcy2FIFiFRiv-ycolfz_nHQ5h3DXjPRoq4V57bumOjywu2xX22FlaXUkQKXcxE57VXr8nZLOq_VYDqRy7yp3aLziurBVg_tqSTJxw1hICrth1F1GbEtTu3yOYt7q6AE8-AKUg91ndHvP1xyFS6_6p-j3Qnz6ZZ8R9Gued_ckEm4uvrPPgfwd8dP6bGPDvJTezXR4d12qElorxewMwTahGJtkM",
-    label: "$45",
+    priceCents: 4500,
     variant: "primary",
     latitude: 9.06134290550408,
     longitude: 76.60384121258556,
@@ -139,7 +140,7 @@ export interface BarberServiceOption {
   title: string;
   subtitle: string;
   badge?: string;
-  price: string;
+  priceCents: number;
   imageUri?: string;
 }
 
@@ -155,7 +156,7 @@ export const BOOKING_SERVICES: BarberServiceOption[] = [
     title: "Master Haircut",
     subtitle: "12 mins away • Today, 4:30 PM",
     badge: "Faster",
-    price: "$45",
+    priceCents: 4500,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDwY5fvNuO9KKgoZx_1AVDvB6vZWpr7zLm82SGXvLR-r9ka-dCMkFoJUugAo-p7JMXrXsh86sf1xyjDkpAqt9BYC6mms3bfLGjPyjmKoCAaZB5y4-GwRQOU8nhtGHdmJQLQJmBngy1XuadQ6mVnpeIAUn_L-w9RtPlAcv-ZWq6Ie3gbG7YDF61Rpc8s2osyPIdXCajJrew-5N2XvUMi0UxKB1lNO8L4Q1touAOJLe2pu7j4qFOlDNMSTMu_pznREprYJ0N6MYm6JY0",
   },
@@ -163,7 +164,7 @@ export const BOOKING_SERVICES: BarberServiceOption[] = [
     id: "service-2",
     title: "Fade & Braids",
     subtitle: "18 mins away • Tomorrow, 10:00 AM",
-    price: "$38",
+    priceCents: 3800,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuB0J_ennBdCX3ZxSYzNR_apWduJ6mYE_fHQpTO4dryWfJMQvDFe3rc3yDSRv1rkpabUcZyx_OfVPjoZps16Dt_yADQ8V712XnI3jCNTv9pASgdR08zC2smhedOKzNZu51qacfnATWyUIQwqxeERHKvyMnnuQqGBMDaKaay8Hgjd6VZD_MNrVmLQftpN8HUaxDqGWfJjL6KdvMAxJRZ_VvSGpc8pjwbWSieAe3JveK3ST0D1y7XLEE92Cvn0n9Vf9ED0K4CokX7LIm8",
   },
@@ -171,14 +172,14 @@ export const BOOKING_SERVICES: BarberServiceOption[] = [
     id: "service-3",
     title: "Beard Trim",
     subtitle: "22 mins away • Thurs, 1:15 PM",
-    price: "$28",
+    priceCents: 2800,
   },
   {
     id: "service-4",
     title: "Line Up & Shape",
     subtitle: "8 mins away • Today, 6:00 PM",
     badge: "Popular",
-    price: "$35",
+    priceCents: 3500,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuA_P62rMQpF4Xq17wHOXrvrqK9QaAmGEnokmHSzGEueJHFhPrpJtAxcy2FIFiFRiv-ycolfz_nHQ5h3DXjPRoq4V57bumOjywu2xX22FlaXUkQKXcxE57VXr8nZLOq_VYDqRy7yp3aLziurBVg_tqSTJxw1hICrth1F1GbEtTu3yOYt7q6AE8-AKUg91ndHvP1xyFS6_6p-j3Qnz6ZZ8R9Gued_ckEm4uvrPPgfwd8dP6bGPDvJTezXR4d12qElorxewMwTahGJtkM",
   },

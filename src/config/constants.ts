@@ -7,6 +7,7 @@ export const STORAGE_KEYS = {
   USER_PROFILE: "@stylequest/user_profile",
   THEME_PREFERENCE: "@stylequest/theme_preference",
   ONBOARDING_COMPLETE: "@stylequest/onboarding_complete",
+  SETTINGS: "@stylequest/settings",
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

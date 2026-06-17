@@ -1,22 +1,4 @@
 /**
- * Formats a numeric price amount into a locale-aware currency string.
- *
- * @param amount    The numeric value to format.
- * @param currency  ISO 4217 currency code (default: 'GBP').
- * @param locale    BCP 47 locale tag (default: 'en-GB').
- */
-export function formatCurrency(
-  amount: number,
-  currency: string = "GBP",
-  locale: string = "en-GB",
-): string {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-  }).format(amount);
-}
-
-/**
  * Formats an ISO 8601 date string into a human-readable date.
  *
  * @param isoString  ISO 8601 date string (e.g., "2026-06-08T10:00:00Z").

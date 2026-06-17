@@ -22,7 +22,7 @@ export interface ShopPackage {
   id: string;
   title: string;
   subtitle: string;
-  price: string;
+  priceCents: number;
   imageUri: string;
   description: string;
   detailImageUri: string;
@@ -68,7 +68,7 @@ export const DEFAULT_SHOP_PACKAGES: readonly ShopPackage[] = [
     id: "pkg-haircut-style",
     title: "Haircut & Hairstyle",
     subtitle: "Special Offers Package, valid until Dec 10, 2024",
-    price: "$125",
+    priceCents: 12500,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBp1vR2PraP8YxRuK_3h7FSy99keYFnkVeahLU27xErsV5lepDjmaH8f9_rbmKiCaGdcvZIIqVZ-mHwDUsU9BmICXqZBpBN6N4mx5ods_Rn04ZbE0fTgLVbgA_9m_ZpWzomk48Og8AdPhohVOzidbLYYle2yGhy-FA5Xj8ai0UmdogZymkgf9d6NnFgnkmng7u-lzXuZS59_w3BL7bfB6zN9mGHzS1KYTporEWxreCfCbo4VrvbkN66xe6bAdBFztNDiK_myjog4A8",
     description: PACKAGE_DESCRIPTION,
@@ -86,7 +86,7 @@ export const DEFAULT_SHOP_PACKAGES: readonly ShopPackage[] = [
     id: "pkg-beauty-makeup",
     title: "Beauty Make up",
     subtitle: "Special Offers Package, valid until Dec 20, 2024",
-    price: "$140",
+    priceCents: 14000,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBMyUG_pzoljBqz7fnXdBoPdZxERvKxbZRWVdYqywKjoIhNXntm88YP1DLvB7dlSQOOle0__b-sYh1H1SuEhcKvZOSHxYHpiEn9Mx-_yEUe_3dcleR7sqduSr5Ue2VN4B0mjf-caBPULerZUnY_uylmuT3j-iHc80u24y1QeSjyLhMM5KKDROMLqYkLqEI8vKvbHL9Wbv4sIeBscy84YzMqjT7IOIFOT7ADw5E586RrDcQwzbdMUIliG_Z-UT7fY9ZDEh8ldIhAhII",
     description: PACKAGE_DESCRIPTION,
@@ -98,7 +98,7 @@ export const DEFAULT_SHOP_PACKAGES: readonly ShopPackage[] = [
     id: "pkg-haircut-coloring",
     title: "Haircut & Hair Coloring",
     subtitle: "Special Offers Package, valid until Dec 16, 2024",
-    price: "$100",
+    priceCents: 10000,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBjid2-cpgSZpLcys9TZXlKG37rBG8K8mxB4nycodxHlcAuNTDBkz-YNtVOut9hyiroClwyxUdpdlv8rW71XgV1OifrccUwszKbcRXFmZJ0y1cyuvl8mScD5qwWWV1ouSdiMPMmAYCOTagnrvo6UO4_H0X-skzW1Mu27yjr6iSYTQtfVZd8w7yKKQ1SKiKVqbolrqSDRrLuOcHbJOwQG3St2b7HpqybljxwfAot0cAMxtWNfUAfXmba9RrpBTYnTdxjUK_bsfDd8FY",
     description: PACKAGE_DESCRIPTION,
@@ -110,7 +110,7 @@ export const DEFAULT_SHOP_PACKAGES: readonly ShopPackage[] = [
     id: "pkg-bridal-makeup",
     title: "Bridal Make up",
     subtitle: "Special Offers Package, valid until Dec 24, 2024",
-    price: "$160",
+    priceCents: 16000,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAYlaTyXEMvLHzn_64bVKjTmm5Rcg9InygH2s7awgwu7s4LaAsJxaM3HZPAUq_OQwFpwgLlsuwMf8X1s98PhFojTVpU3LM8ms9em6KEk8Qlpe9Xmd2kzrVQiSlo0FfZGd2IzgnVnPez08VAAuw3PpLjsw7lHzwELIQUmRkcQojbCDQGq342sS3o4wNUe0pLNdoeZUTr9MGCyser4QrcrRjvveurzTqadsXH_7pBydxAHThM1ga2_dvVKnVfK06Ro90TKMYnGwUX-6M",
     description: PACKAGE_DESCRIPTION,
@@ -122,7 +122,7 @@ export const DEFAULT_SHOP_PACKAGES: readonly ShopPackage[] = [
     id: "pkg-hair-wash-coloring",
     title: "Hair Wash & Coloring",
     subtitle: "Special Offers Package, valid until Dec 24, 2024",
-    price: "$90",
+    priceCents: 9000,
     imageUri:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuD4pq0iclvHlm8Zv8F0Xm59PtzC1JoyHexbaBCdGiB9zxmY4yoS0V5NZfGF5Q9XEefJrY7Cq00DpTEs0Z4xVdZcOTX3SJFyhx8seNhFIHR5QYv2QV6AAxqCN22GQcah565XA-Vs6XFHo4AvuLTRiH-bDRYoizTLOp9vlKAWW3lKBLHBywvpPO2NUKtESHxAYH4Eh1FRUOC_1rVQlge4VjE9UYB215V_PV2be8Js2qj9FrN_cGn5cWo9IOXItHvCOcNwMDR_nSE_lXA",
     description: PACKAGE_DESCRIPTION,

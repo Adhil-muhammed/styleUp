@@ -3,6 +3,26 @@
 // Shared native module mocks for StyleQuest test suite.
 // See .cursor/skills/mobile-testing/SKILL.md for conventions.
 
+jest.mock("expo-localization", () => ({
+  getLocales: () => [{ languageTag: "en-IN", regionCode: "IN" }],
+}));
+
+jest.mock("react-native-mmkv", () => {
+  const storage = new Map<string, string>();
+
+  return {
+    MMKV: jest.fn().mockImplementation(() => ({
+      getString: (key: string) => storage.get(key),
+      set: (key: string, value: string) => {
+        storage.set(key, value);
+      },
+      delete: (key: string) => {
+        storage.delete(key);
+      },
+    })),
+  };
+});
+
 // AsyncStorage — official mock
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),

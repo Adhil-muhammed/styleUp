@@ -94,7 +94,7 @@ const PackageDetailsScreen = ({ route }: Props): React.JSX.Element => {
 
       <View style={styles.footer}>
         <PackageDetailsFooter
-          price={details.package.price}
+          priceCents={details.package.priceCents}
           onBookPress={details.onBookNow}
         />
       </View>

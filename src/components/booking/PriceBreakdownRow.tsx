@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Price } from "@/components/common";
+import Typography from "@/components/common/Typography";
 import { useTheme } from "@/hooks/useTheme";
-import { toTextStyle } from "@/config/theme";
-import { formatPrice } from "@/data/bookMock";
 
 interface PriceBreakdownRowProps {
   label: string;
@@ -17,24 +17,20 @@ const PriceBreakdownRow = ({
 
   return (
     <View style={[styles.row, { paddingVertical: theme.spacing.stackSm }]}>
-      <Text
-        style={[
-          styles.label,
-          toTextStyle(theme.typography.bodyMd),
-          { color: theme.colors.text.primary },
-        ]}
+      <Typography
+        variant="bodyMd"
+        color={theme.colors.text.primary}
+        style={styles.label}
         numberOfLines={2}
       >
         {label}
-      </Text>
-      <Text
-        style={[
-          toTextStyle(theme.typography.bodyMd),
-          { color: theme.colors.text.primary, fontWeight: "600" },
-        ]}
-      >
-        {formatPrice(amountCents)}
-      </Text>
+      </Typography>
+      <Price
+        amountMinor={amountCents}
+        variant="bodyMd"
+        color={theme.colors.text.primary}
+        style={{ fontWeight: "600" }}
+      />
     </View>
   );
 };

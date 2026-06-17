@@ -61,10 +61,6 @@ export const BOOK_BARBER: BookBarberSummary = {
 /** Thursday, October 15 — static demo date from HTML prototype */
 export const BOOK_DEFAULT_DATE = new Date(2026, 9, 15);
 
-export function formatPrice(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
-
 export function formatDuration(minutes: number): string {
   return `${minutes}m`;
 }

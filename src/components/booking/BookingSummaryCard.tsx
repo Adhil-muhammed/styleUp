@@ -1,13 +1,13 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { GlassPanel } from "@/components/common";
+import { GlassPanel, Price } from "@/components/common";
+import Typography from "@/components/common/Typography";
 import { useTheme } from "@/hooks/useTheme";
 import { toTextStyle } from "@/config/theme";
 import {
   formatBookingDate,
   formatDuration,
-  formatPrice,
   type BookBarberSummary,
   type BookServiceOption,
   type TimeSlotOption,
@@ -81,60 +81,37 @@ const BookingSummaryCard = ({
 
         <View style={{ gap: theme.spacing.stackSm }}>
           <View style={styles.lineItem}>
-            <Text
-              style={[
-                toTextStyle(theme.typography.bodyMd),
-                { color: theme.colors.text.secondary },
-              ]}
-            >
+            <Typography variant="bodyMd" color={theme.colors.text.secondary}>
               {service.title}
-            </Text>
-            <Text
-              style={[
-                toTextStyle(theme.typography.labelMd),
-                { color: theme.colors.text.primary },
-              ]}
-            >
-              {formatPrice(service.priceCents)}
-            </Text>
+            </Typography>
+            <Price
+              amountMinor={service.priceCents}
+              color={theme.colors.text.primary}
+            />
           </View>
 
           <View style={styles.lineItem}>
-            <Text
-              style={[
-                toTextStyle(theme.typography.bodyMd),
-                { color: theme.colors.text.secondary },
-              ]}
-            >
+            <Typography variant="bodyMd" color={theme.colors.text.secondary}>
               {formatBookingDate(selectedDate)} • {selectedTime.label}
-            </Text>
-            <Text
-              style={[
-                toTextStyle(theme.typography.bodyMd),
-                { color: theme.colors.text.secondary },
-              ]}
-            >
+            </Typography>
+            <Typography variant="bodyMd" color={theme.colors.text.secondary}>
               {formatDuration(service.durationMinutes)}
-            </Text>
+            </Typography>
           </View>
 
           <View style={[styles.lineItem, { paddingTop: theme.spacing.stackSm }]}>
-            <Text
-              style={[
-                toTextStyle(theme.typography.labelMd),
-                { color: theme.colors.text.primary, fontWeight: "700" },
-              ]}
+            <Typography
+              variant="labelMd"
+              color={theme.colors.text.primary}
+              style={{ fontWeight: "700" }}
             >
               Total
-            </Text>
-            <Text
-              style={[
-                toTextStyle(theme.typography.labelMd),
-                { color: theme.colors.primary.dim, fontWeight: "700" },
-              ]}
-            >
-              {formatPrice(service.priceCents)}
-            </Text>
+            </Typography>
+            <Price
+              amountMinor={service.priceCents}
+              color={theme.colors.primary.dim}
+              style={{ fontWeight: "700" }}
+            />
           </View>
         </View>
       </View>

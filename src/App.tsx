@@ -13,6 +13,7 @@ import {
 } from "@expo-google-fonts/inter";
 import { useTheme } from "./hooks/useTheme";
 import RootNavigator from "./navigation/RootNavigator";
+import "@/store/settingsStore";
 import type { Theme, AppTheme } from "./config/theme";
 
 // ─── Theme Context ─────────────────────────────────────────────────────────────

@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Price } from "@/components/common";
+import Typography from "@/components/common/Typography";
 import { useTheme } from "@/hooks/useTheme";
-import { toTextStyle } from "@/config/theme";
-import { formatPrice } from "@/data/bookMock";
 
 interface SummaryTotalRowProps {
   totalCents: number;
@@ -13,28 +13,20 @@ const SummaryTotalRow = ({ totalCents }: SummaryTotalRowProps): React.JSX.Elemen
 
   return (
     <View style={[styles.row, { paddingVertical: theme.spacing.stackMd }]}>
-      <Text
-        style={[
-          toTextStyle(theme.typography.headlineMd),
-          { color: theme.colors.text.secondary },
-        ]}
-      >
+      <Typography variant="headlineMd" color={theme.colors.text.secondary}>
         Total
-      </Text>
-      <Text
-        style={[
-          toTextStyle(theme.typography.headlineMd),
-          {
-            color: theme.colors.primary.default,
-            shadowColor: theme.colors.primary.default,
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.4,
-            shadowRadius: 8,
-          },
-        ]}
-      >
-        {formatPrice(totalCents)}
-      </Text>
+      </Typography>
+      <Price
+        amountMinor={totalCents}
+        variant="headlineMd"
+        color={theme.colors.primary.default}
+        style={{
+          shadowColor: theme.colors.primary.default,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.4,
+          shadowRadius: 8,
+        }}
+      />
     </View>
   );
 };

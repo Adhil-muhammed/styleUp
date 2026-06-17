@@ -1,17 +1,20 @@
-import React, { useCallback } from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useMemo } from "react";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { Price } from "@/components/common";
+import Typography from "@/components/common/Typography";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useTheme } from "@/hooks/useTheme";
-import { toTextStyle } from "@/config/theme";
 import type { MapPinVariant } from "@/data/discoverMock";
 
 interface MapPinProps {
   avatarUri: string;
-  label: string;
+  label?: string;
+  priceCents?: number;
   variant: MapPinVariant;
   size: number;
   onPress?: () => void;
@@ -22,17 +25,27 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const MapPin = ({
   avatarUri,
   label,
+  priceCents,
   variant,
   size,
   onPress,
 }: MapPinProps): React.JSX.Element => {
   const { theme } = useTheme();
+  const { format } = useCurrency();
   const scale = useSharedValue(1);
 
   const isPrimary = variant === "primary";
   const ringColor = isPrimary
     ? theme.colors.primary.default
     : theme.colors.accent.amber;
+
+  const displayLabel = useMemo((): string => {
+    if (priceCents !== undefined) {
+      return format(priceCents);
+    }
+
+    return label ?? "";
+  }, [format, label, priceCents]);
 
   const handlePressIn = useCallback((): void => {
     scale.value = withSpring(1.1, {
@@ -97,18 +110,28 @@ const MapPin = ({
               },
         ]}
       >
-        <Text
-          style={[
-            toTextStyle(theme.typography.labelSm),
-            {
-              color: isPrimary
+        {priceCents !== undefined ? (
+          <Price
+            amountMinor={priceCents}
+            variant="labelSm"
+            color={
+              isPrimary
                 ? theme.colors.text.primary
-                : theme.colors.accent.amber,
-            },
-          ]}
-        >
-          {label}
-        </Text>
+                : theme.colors.accent.amber
+            }
+          />
+        ) : (
+          <Typography
+            variant="labelSm"
+            color={
+              isPrimary
+                ? theme.colors.text.primary
+                : theme.colors.accent.amber
+            }
+          >
+            {displayLabel}
+          </Typography>
+        )}
       </View>
     </AnimatedPressable>
   );

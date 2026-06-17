@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Price } from "@/components/common";
 import { useTheme } from "@/hooks/useTheme";
 import { toTextStyle } from "@/config/theme";
 import type { ShopPackage } from "@/data/barberProfileMock";
@@ -80,14 +81,11 @@ const PackageOfferCard = ({
         </Pressable>
 
         <View style={styles.footer}>
-          <Text
-            style={[
-              toTextStyle(theme.typography.bodyLg),
-              { color: theme.colors.accent.amber, fontWeight: "700" },
-            ]}
-          >
-            {shopPackage.price}
-          </Text>
+          <Price
+            amountMinor={shopPackage.priceCents}
+            variant="bodyLg"
+            style={{ fontWeight: "700" }}
+          />
 
           <Pressable
             onPress={handleBookPress}

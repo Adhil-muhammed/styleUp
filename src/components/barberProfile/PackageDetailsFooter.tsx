@@ -2,11 +2,12 @@ import React, { useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { BlurView } from "expo-blur";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Price } from "@/components/common";
 import { useTheme } from "@/hooks/useTheme";
 import { toTextStyle } from "@/config/theme";
 
 interface PackageDetailsFooterProps {
-  price: string;
+  priceCents: number;
   onBookPress: () => void;
 }
 
@@ -14,7 +15,7 @@ interface PackageDetailsFooterProps {
 export const PACKAGE_DETAILS_FOOTER_APPROX_HEIGHT = 52;
 
 const PackageDetailsFooter = ({
-  price,
+  priceCents,
   onBookPress,
 }: PackageDetailsFooterProps): React.JSX.Element => {
   const { theme } = useTheme();
@@ -70,7 +71,11 @@ const PackageDetailsFooter = ({
           ]}
         >
           Book Now -{" "}
-          <Text style={{ color: theme.colors.accent.amber }}>{price}</Text>
+          <Price
+            amountMinor={priceCents}
+            variant="labelMd"
+            color={theme.colors.accent.amber}
+          />
         </Text>
       </Pressable>
     </View>
