@@ -4,7 +4,8 @@ import type { AppTabParamList } from "./types";
 import { MidnightEdgeTabBar } from "../components/layout";
 import HomeScreen from "../screens/HomeScreen";
 import DiscoverScreen from "../screens/DiscoverScreen";
-import FeedScreen from "../screens/FeedScreen";
+import BookingsScreen from "../screens/BookingsScreen";
+import ChatScreen from "../screens/ChatScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator<AppTabParamList>();
@@ -27,13 +28,15 @@ const AppNavigator: React.FC = () => {
           borderTopWidth: 0,
           elevation: 0,
         },
+        tabBarBackground: () => null,
         sceneStyle: { backgroundColor: "transparent" },
       }}
-      initialRouteName="Discover"
+      initialRouteName="Home"
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Discover" component={DiscoverScreen} />
-      <Tab.Screen name="Feed" component={FeedScreen} />
+      <Tab.Screen name="Bookings" component={BookingsScreen} />
+      <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

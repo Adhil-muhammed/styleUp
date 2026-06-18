@@ -6,11 +6,15 @@ import { toTextStyle } from "@/config/theme";
 interface BookingSectionHeaderProps {
   title: string;
   onSeeAllPress?: () => void;
+  actionLabel?: string;
 }
+
+const DEFAULT_ACTION_LABEL = "See All";
 
 const BookingSectionHeader = ({
   title,
   onSeeAllPress,
+  actionLabel = DEFAULT_ACTION_LABEL,
 }: BookingSectionHeaderProps): React.JSX.Element => {
   const { theme } = useTheme();
 
@@ -33,10 +37,10 @@ const BookingSectionHeader = ({
           <Text
             style={[
               toTextStyle(theme.typography.labelMd),
-              { color: theme.colors.accent.amber, fontWeight: "700" },
+              { color: theme.colors.primary.dim, fontWeight: "700" },
             ]}
           >
-            See All
+            {actionLabel}
           </Text>
         </Pressable>
       ) : null}

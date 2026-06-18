@@ -9,12 +9,22 @@ interface DiscoverSearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   onFilterPress?: () => void;
+  placeholder?: string;
+  autoFocus?: boolean;
+  editable?: boolean;
+  onPress?: () => void;
 }
+
+const DEFAULT_PLACEHOLDER = "Find your next cut...";
 
 const DiscoverSearchBar = ({
   value,
   onChangeText,
   onFilterPress,
+  placeholder = DEFAULT_PLACEHOLDER,
+  autoFocus = false,
+  editable = true,
+  onPress,
 }: DiscoverSearchBarProps): React.JSX.Element => {
   const { theme } = useTheme();
   const [focused, setFocused] = useState(false);
@@ -22,18 +32,18 @@ const DiscoverSearchBar = ({
   const handleFocus = useCallback((): void => setFocused(true), []);
   const handleBlur = useCallback((): void => setFocused(false), []);
 
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: `${theme.colors.depth.level1}99`,
-          borderColor: theme.colors.border.level1,
-          borderRadius: theme.borderRadius.full,
-        },
-        focused && focusGlowStyle(theme),
-      ]}
-    >
+  const containerStyle = [
+    styles.container,
+    {
+      backgroundColor: `${theme.colors.depth.level1}99`,
+      borderColor: theme.colors.border.level1,
+      borderRadius: theme.borderRadius.full,
+    },
+    focused && focusGlowStyle(theme),
+  ];
+
+  const content = (
+    <>
       <BlurView
         intensity={theme.glassmorphism.blur}
         tint="dark"
@@ -53,8 +63,11 @@ const DiscoverSearchBar = ({
         onChangeText={onChangeText}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        placeholder="Find your next cut..."
+        placeholder={placeholder}
         placeholderTextColor={theme.colors.text.secondary}
+        autoFocus={autoFocus}
+        editable={editable}
+        pointerEvents={editable ? "auto" : "none"}
         style={[
           styles.input,
           toTextStyle(theme.typography.bodyMd),
@@ -68,8 +81,25 @@ const DiscoverSearchBar = ({
           color={theme.colors.text.secondary}
         />
       </Pressable>
-    </View>
+    </>
   );
+
+  if (!editable && onPress !== undefined) {
+    return (
+      <Pressable
+        onPress={onPress}
+        hitSlop={4}
+        style={({ pressed }) => [
+          containerStyle,
+          { opacity: pressed ? 0.85 : 1 },
+        ]}
+      >
+        {content}
+      </Pressable>
+    );
+  }
+
+  return <View style={containerStyle}>{content}</View>;
 };
 
 const styles = StyleSheet.create({

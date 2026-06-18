@@ -17,6 +17,7 @@ export type RootStackParamList = {
   PaymentMethod: { shopId: string };
   PaymentSummary: { shopId: string };
   PaymentSuccess: { shopId: string };
+  Search: { initialQuery?: string } | undefined;
 };
 
 export type AuthStackParamList = {
@@ -28,7 +29,8 @@ export type AuthStackParamList = {
 export type AppTabParamList = {
   Home: undefined;
   Discover: undefined;
-  Feed: undefined;
+  Bookings: undefined;
+  Chat: undefined;
   Profile: undefined;
 };
 

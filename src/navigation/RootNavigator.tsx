@@ -9,6 +9,7 @@ import ServiceVariantScreen from "../screens/ServiceVariantScreen";
 import PaymentMethodScreen from "../screens/PaymentMethodScreen";
 import PaymentSummaryScreen from "../screens/PaymentSummaryScreen";
 import PaymentSuccessScreen from "../screens/PaymentSuccessScreen";
+import SearchScreen from "../screens/SearchScreen";
 import type { RootStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -64,6 +65,11 @@ const RootNavigator: React.FC = () => {
           animation: "fade",
           contentStyle: { backgroundColor: "transparent" },
         }}
+      />
+      <Stack.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{ animation: "slide_from_right" }}
       />
     </Stack.Navigator>
   );
