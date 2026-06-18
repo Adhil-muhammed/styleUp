@@ -1,0 +1,163 @@
+<!doctype html>
+<html class="dark" lang="en" style="">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Booking Confirmed</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              surface: "#131318",
+              "on-error-container": "#ffdad6",
+              "secondary-container": "#ee9800",
+              "on-secondary-fixed": "#2a1700",
+              "primary-fixed": "#eaddff",
+              "error-container": "#93000a",
+              "secondary-fixed": "#ffddb8",
+              "on-tertiary-fixed": "#002113",
+              secondary: "#ffb95f",
+              "on-surface": "#e4e1e9",
+              "on-primary": "#3f008e",
+              "surface-dim": "#131318",
+              "on-secondary-container": "#5b3800",
+              "on-primary-fixed": "#25005a",
+              "on-background": "#e4e1e9",
+              "surface-variant": "#35343a",
+              "inverse-on-surface": "#303036",
+              "tertiary-fixed-dim": "#4edea3",
+              "on-secondary-fixed-variant": "#653e00",
+              "tertiary-container": "#007650",
+              "on-error": "#690005",
+              "surface-container-high": "#2a292f",
+              "primary-container": "#7c3aed",
+              "inverse-primary": "#732ee4",
+              "surface-container-low": "#1b1b20",
+              "primary-fixed-dim": "#d2bbff",
+              "on-tertiary-fixed-variant": "#005236",
+              background: "#131318",
+              "surface-container-highest": "#35343a",
+              primary: "#d2bbff",
+              "outline-variant": "#4a4455",
+              "on-tertiary-container": "#76ffc2",
+              "inverse-surface": "#e4e1e9",
+              error: "#ffb4ab",
+              "on-primary-fixed-variant": "#5a00c6",
+              "on-surface-variant": "#ccc3d8",
+              "on-tertiary": "#003824",
+              "surface-container": "#1f1f25",
+              outline: "#958da1",
+              "tertiary-fixed": "#6ffbbe",
+              tertiary: "#4edea3",
+              "surface-tint": "#d2bbff",
+              "surface-bright": "#39383e",
+              "on-secondary": "#472a00",
+              "on-primary-container": "#ede0ff",
+              "surface-container-lowest": "#0e0e13",
+              "secondary-fixed-dim": "#ffb95f",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+              "2xl": "1rem",
+            },
+            fontFamily: {
+              headline: ["Inter", "sans-serif"],
+              display: ["Inter", "sans-serif"],
+              body: ["Inter", "sans-serif"],
+              label: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #131318;
+        color: #e4e1e9;
+      }
+      .glass-panel {
+        background: rgba(26, 26, 36, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(124, 58, 237, 0.15);
+      }
+      .success-glow {
+        box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-surface text-on-surface min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+  >
+    <!-- Top App Bar (Suppressed for transactional screen as per logic, but included if explicitly requested. Here we suppress it to focus on the success state as it's a dead end/success screen) -->
+    <!-- Main Content -->
+    <main
+      class="flex-grow flex flex-col items-center w-full max-w-md px-6 py-12 z-10 relative"
+    >
+      <!-- Animated Background Element (Optional ambiance) -->
+      <div class="absolute inset-0 z-0 opacity-20 pointer-events-none">
+        <div
+          class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary-container rounded-full blur-[120px]"
+        ></div>
+      </div>
+      <!-- Success Icon -->
+      <div
+        class="w-24 h-24 mb-8 rounded-full bg-tertiary flex items-center justify-center shadow-[0_0_30px_rgba(78,222,163,0.5)] mt-auto"
+      >
+        <span
+          class="material-symbols-outlined text-white text-5xl font-bold"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+        >
+          check
+        </span>
+      </div>
+      <!-- Typography -->
+      <div class="text-center mb-auto">
+        <h1
+          class="font-headline text-3xl font-bold tracking-tight mb-4 text-on-surface"
+        >
+          Your appointment<br />booking is successfully.
+        </h1>
+        <p
+          class="font-body text-base text-on-surface-variant mb-12 max-w-[280px] mx-auto"
+        >
+          You can view the appointment booking info in the "Appointment"
+          section.
+        </p>
+      </div>
+      <!-- Actions pinned to bottom -->
+      <div class="w-full space-y-4 mt-8">
+        <button
+          class="w-full bg-primary-container hover:bg-[#6D28D9] text-on-primary-container font-label text-sm font-bold uppercase tracking-widest py-4 rounded-full transition-all active:scale-95 duration-200 shadow-[0_0_15px_rgba(124,58,237,0.3)] hover:shadow-[0_0_25px_rgba(124,58,237,0.5)]"
+        >
+          Continue Booking
+        </button>
+        <button
+          class="w-full bg-transparent border border-outline-variant hover:bg-surface-container-highest text-primary font-label text-sm font-bold uppercase tracking-widest py-4 rounded-full transition-all active:scale-95 duration-200"
+        >
+          Go to appointment
+        </button>
+      </div>
+    </main>
+    <!-- Bottom Nav Bar (Suppressed for transactional screen) -->
+  </body>
+</html>

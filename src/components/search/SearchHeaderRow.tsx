@@ -26,7 +26,7 @@ const SearchHeaderRow = ({
   const { theme } = useTheme();
 
   return (
-    <View style={[styles.row, { gap: theme.spacing.stackMd }]}>
+    <View style={[styles.row, { gap: theme.spacing.stackSm }]}>
       <View style={styles.searchWrap}>
         <DiscoverSearchBar
           value={searchQuery}
@@ -52,7 +52,11 @@ const SearchHeaderRow = ({
           },
         ]}
       >
-        <MaterialIcons name="close" size={22} color={theme.colors.text.primary} />
+        <MaterialIcons
+          name="close"
+          size={22}
+          color={theme.colors.text.primary}
+        />
       </Pressable>
     </View>
   );

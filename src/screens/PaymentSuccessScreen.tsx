@@ -1,137 +1,120 @@
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { BlurView } from "expo-blur";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Typography from "@/components/common/Typography";
 import {
+  BookingConfirmedIcon,
   BookingPillButton,
-  PaymentSuccessHero,
 } from "@/components/booking";
 import { usePaymentSuccessScreen } from "@/hooks/usePaymentSuccessScreen";
 import { useTheme } from "@/hooks/useTheme";
-import { toTextStyle } from "@/config/theme";
 import type { RootStackScreenProps } from "@/navigation/types";
 
 type Props = RootStackScreenProps<"PaymentSuccess">;
 
-const CARD_PADDING = 32;
+const AMBIENT_GLOW_SIZE = 384;
+const SUBTITLE_MAX_WIDTH = 280;
 
 const PaymentSuccessScreen = ({ route }: Props): React.JSX.Element => {
   const { theme } = useTheme();
-  const { onViewReceipt, onHome } = usePaymentSuccessScreen(route.params.shopId);
-  const cardScale = useSharedValue(0.92);
-
-  useEffect(() => {
-    cardScale.value = withSpring(1, {
-      stiffness: theme.motion.spring.stiffness,
-      damping: theme.motion.spring.damping,
-    });
-  }, [cardScale, theme.motion.spring.damping, theme.motion.spring.stiffness]);
-
-  const cardStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: cardScale.value }],
-  }));
+  const { onContinueBooking, onGoToAppointment } = usePaymentSuccessScreen(
+    route.params.shopId,
+  );
 
   return (
-    <View style={styles.root} pointerEvents="box-none">
-      <BlurView
-        intensity={theme.glassmorphism.blur}
-        tint="dark"
-        style={StyleSheet.absoluteFill}
-      />
+    <SafeAreaView
+      edges={["top", "bottom"]}
+      style={[styles.root, { backgroundColor: theme.colors.depth.background }]}
+    >
       <View
-        style={[
-          StyleSheet.absoluteFill,
-          { backgroundColor: theme.colors.nav.surfaceScrim },
-        ]}
         pointerEvents="none"
+        style={[
+          styles.ambientGlow,
+          {
+            width: AMBIENT_GLOW_SIZE,
+            height: AMBIENT_GLOW_SIZE,
+            borderRadius: AMBIENT_GLOW_SIZE / 2,
+            backgroundColor: theme.colors.primary.default,
+            opacity: 0.2,
+          },
+        ]}
       />
 
       <View
         style={[
-          styles.centeredContent,
-          { paddingHorizontal: theme.spacing.containerMargin },
+          styles.content,
+          {
+            paddingHorizontal: theme.spacing.containerMargin,
+            paddingVertical: theme.spacing.stackLg,
+          },
         ]}
       >
-        <Animated.View
-          style={[
-            styles.card,
-            {
-              backgroundColor: theme.colors.nav.surface,
-              borderColor: theme.colors.border.level1,
-              borderRadius: theme.borderRadius.xl,
-              padding: CARD_PADDING,
-            },
-            cardStyle,
-          ]}
-        >
-          <PaymentSuccessHero />
+        <View style={styles.heroSection}>
+          <BookingConfirmedIcon />
 
-          <Text
-            style={[
-              toTextStyle(theme.typography.headlineMd),
-              styles.title,
-              { color: theme.colors.accent.amber },
-            ]}
+          <Typography
+            variant="headlineLgMobile"
+            color={theme.colors.text.primary}
+            style={[styles.title, { marginTop: theme.spacing.stackLg }]}
           >
-            Payment Successful!
-          </Text>
+            Your appointment{"\n"}booking is successfully.
+          </Typography>
 
-          <Text
-            style={[
-              toTextStyle(theme.typography.bodyMd),
-              styles.subtitle,
-              { color: theme.colors.text.secondary },
-            ]}
+          <Typography
+            variant="bodyMd"
+            color={theme.colors.text.secondary}
+            style={[styles.subtitle, { marginTop: theme.spacing.stackMd }]}
           >
-            Your booking has been successfully done
-          </Text>
+            You can view the appointment booking info in the &quot;Appointment&quot;
+            section.
+          </Typography>
+        </View>
 
-          <View style={[styles.actions, { gap: theme.spacing.stackMd }]}>
-            <BookingPillButton
-              variant="primary"
-              label="View E-Receipt"
-              onPress={onViewReceipt}
-            />
-            <BookingPillButton variant="secondary" label="Home" onPress={onHome} />
-          </View>
-        </Animated.View>
+        <View style={[styles.actions, { gap: theme.spacing.stackMd }]}>
+          <BookingPillButton
+            variant="primary"
+            label="Continue Booking"
+            onPress={onContinueBooking}
+          />
+          <BookingPillButton
+            variant="outline"
+            label="Go to appointment"
+            onPress={onGoToAppointment}
+          />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
+    overflow: "hidden",
   },
-  centeredContent: {
+  ambientGlow: {
+    position: "absolute",
+    top: "25%",
+    left: "50%",
+    marginLeft: -AMBIENT_GLOW_SIZE / 2,
+  },
+  content: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    zIndex: 1,
   },
-  card: {
-    width: "100%",
+  heroSection: {
+    flex: 1,
     alignItems: "center",
-    borderWidth: 1,
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
-    elevation: 8,
+    justifyContent: "center",
   },
   title: {
     textAlign: "center",
-    marginBottom: 12,
+    textTransform: "none",
   },
   subtitle: {
     textAlign: "center",
-    maxWidth: 240,
-    lineHeight: 24,
-    marginBottom: 40,
+    textTransform: "none",
+    maxWidth: SUBTITLE_MAX_WIDTH,
   },
   actions: {
     width: "100%",

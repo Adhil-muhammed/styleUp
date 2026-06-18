@@ -6,7 +6,7 @@ export { default as BookingSummaryCard } from "./BookingSummaryCard";
 export { default as BookingNotesInput } from "./BookingNotesInput";
 export { default as ConfirmBookingBar, CONFIRM_CTA_APPROX_HEIGHT } from "./ConfirmBookingBar";
 export { default as BookingPillButton } from "./BookingPillButton";
-export { default as PaymentSuccessHero } from "./PaymentSuccessHero";
+export { default as BookingConfirmedIcon } from "./BookingConfirmedIcon";
 export { default as BookingAppointmentHeader } from "./BookingAppointmentHeader";
 export { default as BookingSectionHeader } from "./BookingSectionHeader";
 export { default as BookingCalendarPanel } from "./BookingCalendarPanel";

@@ -1,10 +1,13 @@
 import type { FilterOption } from "@/data/discoverMock";
 import type { ResolvedNearestSalon } from "@/data/homeMock";
 
+export type SearchTargetGender = "man" | "woman";
+
 export interface SearchSalonEntry {
   shopId: string;
   distanceKm: number;
   categoryIds: readonly string[];
+  targetGenders: readonly SearchTargetGender[];
 }
 
 export interface PopularArtist {
@@ -59,12 +62,42 @@ export const POPULAR_ARTISTS: readonly PopularArtist[] = [
 ] as const;
 
 export const SEARCH_SALON_ENTRIES: readonly SearchSalonEntry[] = [
-  { shopId: "shop-3", distanceKm: 15, categoryIds: ["haircuts", "skin-care"] },
-  { shopId: "shop-4", distanceKm: 25, categoryIds: ["haircuts", "make-up"] },
-  { shopId: "shop-5", distanceKm: 48, categoryIds: ["haircuts", "massage"] },
-  { shopId: "shop-6", distanceKm: 89, categoryIds: ["haircuts", "skin-care"] },
-  { shopId: "shop-1", distanceKm: 5, categoryIds: ["haircuts", "make-up", "skin-care"] },
-  { shopId: "shop-2", distanceKm: 8, categoryIds: ["haircuts"] },
+  {
+    shopId: "shop-3",
+    distanceKm: 15,
+    categoryIds: ["haircuts", "skin-care"],
+    targetGenders: ["man", "woman"],
+  },
+  {
+    shopId: "shop-4",
+    distanceKm: 25,
+    categoryIds: ["haircuts", "make-up"],
+    targetGenders: ["woman"],
+  },
+  {
+    shopId: "shop-5",
+    distanceKm: 48,
+    categoryIds: ["haircuts", "massage"],
+    targetGenders: ["man", "woman"],
+  },
+  {
+    shopId: "shop-6",
+    distanceKm: 89,
+    categoryIds: ["haircuts", "skin-care"],
+    targetGenders: ["woman"],
+  },
+  {
+    shopId: "shop-1",
+    distanceKm: 5,
+    categoryIds: ["haircuts", "make-up", "skin-care"],
+    targetGenders: ["man", "woman"],
+  },
+  {
+    shopId: "shop-2",
+    distanceKm: 8,
+    categoryIds: ["haircuts"],
+    targetGenders: ["man"],
+  },
 ] as const;
 
 export type ResolvedSearchSalon = ResolvedNearestSalon;

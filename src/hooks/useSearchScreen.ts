@@ -12,9 +12,12 @@ import {
 } from "@/data/searchMock";
 import type { FilterOption } from "@/data/discoverMock";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useSearchFilters } from "@/hooks/useSearchFilters";
 import type { RootStackParamList } from "@/navigation/types";
 import { useBookingDraftStore } from "@/store/bookingDraftStore";
 import { navigateToBookAppointment } from "@/utils/navigateToBookAppointment";
+import { matchesSearchFilters } from "@/utils/searchFilterMatching";
+import type { SearchFilterState, SearchGenderFilter } from "@/types/searchFilters";
 
 type SearchNavigationProp = NativeStackNavigationProp<RootStackParamList, "Search">;
 type SearchRouteProp = RouteProp<RootStackParamList, "Search">;
@@ -23,13 +26,24 @@ export interface UseSearchScreenResult {
   searchQuery: string;
   activeCategoryId: string;
   categories: readonly FilterOption[];
+  serviceFilterOptions: readonly FilterOption[];
   popularArtists: readonly PopularArtist[];
   filteredSalons: readonly ResolvedSearchSalon[];
   resultCount: number;
+  isFilterSheetOpen: boolean;
+  draftFilters: SearchFilterState;
+  draftFilterCount: number;
   onSearchChange: (text: string) => void;
   onCategorySelect: (categoryId: string) => void;
   onClose: () => void;
   onFilterPress: () => void;
+  onFilterSheetDismiss: () => void;
+  onClearDraftFilters: () => void;
+  onApplyFilters: () => void;
+  onToggleDraftService: (serviceId: string) => void;
+  onSelectDraftRating: (minRating: number) => void;
+  onSelectDraftGender: (gender: SearchGenderFilter) => void;
+  onSelectDraftDistance: (maxDistanceKm: number) => void;
   onArtistPress: (artistId: string) => void;
   onSalonPress: (shopId: string) => void;
   onBookPress: (shopId: string) => void;
@@ -50,13 +64,19 @@ export function useSearchScreen(): UseSearchScreenResult {
   const navigation = useNavigation<SearchNavigationProp>();
   const route = useRoute<SearchRouteProp>();
   const setDraftFromDiscover = useBookingDraftStore((s) => s.setDraftFromDiscover);
+  const filters = useSearchFilters();
 
   const [searchQuery, setSearchQuery] = useState(
     route.params?.initialQuery ?? "",
   );
-  const [activeCategoryId, setActiveCategoryId] = useState("all");
 
   const debouncedQuery = useDebounce(searchQuery, 300);
+
+  const serviceFilterOptions = useMemo(
+    (): readonly FilterOption[] =>
+      SEARCH_CATEGORIES.filter((category) => category.id !== "all"),
+    [],
+  );
 
   const allSalons = useMemo((): readonly ResolvedSearchSalon[] => {
     return SEARCH_SALON_ENTRIES.map((entry) => {
@@ -85,13 +105,12 @@ export function useSearchScreen(): UseSearchScreenResult {
         return false;
       }
 
-      const matchesCategory =
-        activeCategoryId === "all" ||
-        entry.categoryIds.includes(activeCategoryId);
-
-      return matchesCategory && matchesQuery(salon, debouncedQuery);
+      return (
+        matchesQuery(salon, debouncedQuery) &&
+        matchesSearchFilters(entry, salon, filters.appliedFilters)
+      );
     });
-  }, [activeCategoryId, allSalons, debouncedQuery]);
+  }, [allSalons, debouncedQuery, filters.appliedFilters]);
 
   const resultCount = filteredSalons.length;
 
@@ -99,17 +118,20 @@ export function useSearchScreen(): UseSearchScreenResult {
     setSearchQuery(text);
   }, []);
 
-  const onCategorySelect = useCallback((categoryId: string): void => {
-    setActiveCategoryId(categoryId);
-  }, []);
+  const onCategorySelect = useCallback(
+    (categoryId: string): void => {
+      filters.syncServiceFromCategory(categoryId);
+    },
+    [filters],
+  );
 
   const onClose = useCallback((): void => {
     navigation.goBack();
   }, [navigation]);
 
   const onFilterPress = useCallback((): void => {
-    // Stub for future filter sheet.
-  }, []);
+    filters.presentSheet();
+  }, [filters]);
 
   const onArtistPress = useCallback(
     (artistId: string): void => {
@@ -137,15 +159,26 @@ export function useSearchScreen(): UseSearchScreenResult {
 
   return {
     searchQuery,
-    activeCategoryId,
+    activeCategoryId: filters.activeCategoryId,
     categories: SEARCH_CATEGORIES,
+    serviceFilterOptions,
     popularArtists: POPULAR_ARTISTS,
     filteredSalons,
     resultCount,
+    isFilterSheetOpen: filters.isSheetOpen,
+    draftFilters: filters.draftFilters,
+    draftFilterCount: filters.draftFilterCount,
     onSearchChange,
     onCategorySelect,
     onClose,
     onFilterPress,
+    onFilterSheetDismiss: filters.onSheetDismiss,
+    onClearDraftFilters: filters.clearDraft,
+    onApplyFilters: filters.applyDraft,
+    onToggleDraftService: filters.toggleDraftService,
+    onSelectDraftRating: filters.setDraftMinRating,
+    onSelectDraftGender: filters.setDraftGender,
+    onSelectDraftDistance: filters.setDraftMaxDistanceKm,
     onArtistPress,
     onSalonPress,
     onBookPress,

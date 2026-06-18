@@ -6,6 +6,7 @@ import { FilterPillRow } from "@/components/discover";
 import { HomeSalonListCard } from "@/components/home";
 import {
   SearchArtistRow,
+  SearchFilterSheet,
   SearchHeaderRow,
 } from "@/components/search";
 import { useSearchScreen } from "@/hooks/useSearchScreen";
@@ -19,75 +20,92 @@ const SearchScreen = (_props: Props): React.JSX.Element => {
   const search = useSearchScreen();
 
   return (
-    <SafeAreaView
-      edges={["top", "bottom"]}
-      style={[styles.root, { backgroundColor: theme.colors.depth.level0 }]}
-    >
-      <View
-        style={[
-          styles.stickyHeader,
-          {
-            paddingHorizontal: theme.spacing.containerMargin,
-            paddingTop: theme.spacing.stackLg,
-            paddingBottom: theme.spacing.stackMd,
-            gap: theme.spacing.stackMd,
-            backgroundColor: theme.colors.depth.level0,
-            borderBottomColor: theme.colors.border.level1,
-          },
-        ]}
+    <>
+      <SafeAreaView
+        edges={["top", "bottom"]}
+        style={[styles.root, { backgroundColor: theme.colors.depth.level0 }]}
       >
-        <SearchHeaderRow
-          searchQuery={search.searchQuery}
-          onSearchChange={search.onSearchChange}
-          onFilterPress={search.onFilterPress}
-          onClose={search.onClose}
-        />
-        <FilterPillRow
-          options={[...search.categories]}
-          activeId={search.activeCategoryId}
-          onSelect={search.onCategorySelect}
-        />
-      </View>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        style={styles.scroll}
-        contentContainerStyle={[
-          styles.scrollContent,
-          {
-            paddingHorizontal: theme.spacing.containerMargin,
-            paddingTop: theme.spacing.sectionGap,
-            paddingBottom: theme.spacing.sectionGap,
-            gap: theme.spacing.sectionGap,
-          },
-        ]}
-      >
-        <View style={{ gap: theme.spacing.stackMd }}>
-          <BookingSectionHeader title="Popular artist" />
-          <SearchArtistRow
-            artists={search.popularArtists}
-            onArtistPress={search.onArtistPress}
+        <View
+          style={[
+            styles.stickyHeader,
+            {
+              paddingHorizontal: theme.spacing.containerMargin,
+              paddingTop: theme.spacing.stackLg,
+              paddingBottom: theme.spacing.stackMd,
+              gap: theme.spacing.stackMd,
+              backgroundColor: theme.colors.depth.level0,
+              borderBottomColor: theme.colors.border.level1,
+            },
+          ]}
+        >
+          <SearchHeaderRow
+            searchQuery={search.searchQuery}
+            onSearchChange={search.onSearchChange}
+            onFilterPress={search.onFilterPress}
+            onClose={search.onClose}
+          />
+          <FilterPillRow
+            options={[...search.categories]}
+            activeId={search.activeCategoryId}
+            onSelect={search.onCategorySelect}
           />
         </View>
 
-        <View style={{ gap: theme.spacing.stackMd }}>
-          <BookingSectionHeader
-            title={`Result found(${search.resultCount})`}
-          />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          style={styles.scroll}
+          contentContainerStyle={[
+            styles.scrollContent,
+            {
+              paddingHorizontal: theme.spacing.containerMargin,
+              paddingTop: theme.spacing.sectionGap,
+              paddingBottom: theme.spacing.sectionGap,
+              gap: theme.spacing.sectionGap,
+            },
+          ]}
+        >
           <View style={{ gap: theme.spacing.stackMd }}>
-            {search.filteredSalons.map((salon) => (
-              <HomeSalonListCard
-                key={salon.shopId}
-                salon={salon}
-                onPress={search.onSalonPress}
-                ratingDisplay="score"
-              />
-            ))}
+            <BookingSectionHeader title="Popular artist" />
+            <SearchArtistRow
+              artists={search.popularArtists}
+              onArtistPress={search.onArtistPress}
+            />
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+          <View style={{ gap: theme.spacing.stackMd }}>
+            <BookingSectionHeader
+              title={`Result found(${search.resultCount})`}
+            />
+            <View style={{ gap: theme.spacing.stackMd }}>
+              {search.filteredSalons.map((salon) => (
+                <HomeSalonListCard
+                  key={salon.shopId}
+                  salon={salon}
+                  onPress={search.onSalonPress}
+                  ratingDisplay="score"
+                />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+
+      {search.isFilterSheetOpen ? (
+        <SearchFilterSheet
+          serviceOptions={search.serviceFilterOptions}
+          draftFilters={search.draftFilters}
+          draftFilterCount={search.draftFilterCount}
+          onDismiss={search.onFilterSheetDismiss}
+          onClear={search.onClearDraftFilters}
+          onApply={search.onApplyFilters}
+          onToggleService={search.onToggleDraftService}
+          onSelectRating={search.onSelectDraftRating}
+          onSelectGender={search.onSelectDraftGender}
+          onSelectDistance={search.onSelectDraftDistance}
+        />
+      ) : null}
+    </>
   );
 };
 

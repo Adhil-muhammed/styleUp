@@ -61,7 +61,6 @@ const RootNavigator: React.FC = () => {
         name="PaymentSuccess"
         component={PaymentSuccessScreen}
         options={{
-          presentation: "transparentModal",
           animation: "fade",
           contentStyle: { backgroundColor: "transparent" },
         }}
