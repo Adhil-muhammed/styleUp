@@ -75,6 +75,26 @@ const HomeScreen = (_props: Props): React.JSX.Element => {
           }}
         >
           <BookingSectionHeader
+            title="Most Popular"
+            actionLabel="View All"
+            onSeeAllPress={home.onViewAllPopularSalons}
+          />
+          {home.popularSalons.map((salon) => (
+            <HomeSalonListCard
+              key={salon.shopId}
+              salon={salon}
+              onPress={home.onSalonPress}
+            />
+          ))}
+        </View>
+
+        <View
+          style={{
+            paddingHorizontal: theme.spacing.containerMargin,
+            gap: theme.spacing.stackMd,
+          }}
+        >
+          <BookingSectionHeader
             title="Nearest Salon"
             actionLabel="View All"
             onSeeAllPress={home.onViewAllSalons}

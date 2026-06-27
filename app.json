@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "StyleQuest",
+    "slug": "stylequest",
+    "android": {
+      "package": "com.yourname.stylequest"
+    }
+  }
+}

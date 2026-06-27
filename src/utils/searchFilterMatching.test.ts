@@ -58,7 +58,7 @@ describe("matchesSearchFilters", () => {
     expect(
       matchesSearchFilters(entry, salon, {
         ...DEFAULT_SEARCH_FILTERS,
-        minRating: 5,
+        minRating: 6,
       }),
     ).toBe(false);
   });

@@ -9,9 +9,11 @@ import {
   HOME_PROMO,
   HOME_USER_LOCATION,
   HOME_USER_NAME_FALLBACK,
+  MOST_POPULAR_SALONS,
   NEAREST_SALONS,
   type HomeCategory,
   type HomePromo,
+  type NearestSalon,
   type ResolvedNearestSalon,
 } from "@/data/homeMock";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,6 +26,24 @@ type HomeNavigationProp = CompositeNavigationProp<
 
 export type { ResolvedNearestSalon } from "@/data/homeMock";
 
+function resolveSalonEntries(
+  entries: readonly NearestSalon[],
+): readonly ResolvedNearestSalon[] {
+  return entries.map((entry) => {
+    const shop = getShopProfile(entry.shopId);
+    const heroImage = shop.heroImages[0];
+
+    return {
+      shopId: entry.shopId,
+      name: shop.name,
+      address: shop.address,
+      rating: shop.rating,
+      imageUri: heroImage ?? "",
+      distanceKm: entry.distanceKm,
+    };
+  });
+}
+
 export interface UseHomeScreenResult {
   searchQuery: string;
   userGreeting: string;
@@ -31,6 +51,7 @@ export interface UseHomeScreenResult {
   categories: readonly HomeCategory[];
   promo: HomePromo;
   nearestSalons: readonly ResolvedNearestSalon[];
+  popularSalons: readonly ResolvedNearestSalon[];
   onSearchChange: (text: string) => void;
   onSearchPress: () => void;
   onNotificationPress: () => void;
@@ -40,6 +61,7 @@ export interface UseHomeScreenResult {
   onPromoBookPress: () => void;
   onSalonPress: (shopId: string) => void;
   onViewAllSalons: () => void;
+  onViewAllPopularSalons: () => void;
 }
 
 export function useHomeScreen(): UseHomeScreenResult {
@@ -54,21 +76,16 @@ export function useHomeScreen(): UseHomeScreenResult {
       : HOME_USER_NAME_FALLBACK;
   }, [user?.displayName]);
 
-  const nearestSalons = useMemo((): readonly ResolvedNearestSalon[] => {
-    return NEAREST_SALONS.map((entry) => {
-      const shop = getShopProfile(entry.shopId);
-      const heroImage = shop.heroImages[0];
+  const nearestSalons = useMemo(
+    (): readonly ResolvedNearestSalon[] => resolveSalonEntries(NEAREST_SALONS),
+    [],
+  );
 
-      return {
-        shopId: entry.shopId,
-        name: shop.name,
-        address: shop.address,
-        rating: shop.rating,
-        imageUri: heroImage ?? "",
-        distanceKm: entry.distanceKm,
-      };
-    });
-  }, []);
+  const popularSalons = useMemo(
+    (): readonly ResolvedNearestSalon[] =>
+      resolveSalonEntries(MOST_POPULAR_SALONS),
+    [],
+  );
 
   const onSearchChange = useCallback((text: string): void => {
     setSearchQuery(text);
@@ -95,9 +112,12 @@ export function useHomeScreen(): UseHomeScreenResult {
     // Stub for future search filters.
   }, []);
 
-  const onCategoryPress = useCallback((_categoryId: string): void => {
-    // Stub for future category filtering.
-  }, []);
+  const onCategoryPress = useCallback(
+    (categoryId: string): void => {
+      navigation.navigate("CategorySalons", { categoryId });
+    },
+    [navigation],
+  );
 
   const onPromoBookPress = useCallback((): void => {
     navigation.navigate("Discover");
@@ -114,6 +134,10 @@ export function useHomeScreen(): UseHomeScreenResult {
     navigation.navigate("Discover");
   }, [navigation]);
 
+  const onViewAllPopularSalons = useCallback((): void => {
+    navigation.navigate("Search");
+  }, [navigation]);
+
   return {
     searchQuery,
     userGreeting,
@@ -121,6 +145,7 @@ export function useHomeScreen(): UseHomeScreenResult {
     categories: HOME_CATEGORIES,
     promo: HOME_PROMO,
     nearestSalons,
+    popularSalons,
     onSearchChange,
     onSearchPress,
     onNotificationPress,
@@ -130,5 +155,6 @@ export function useHomeScreen(): UseHomeScreenResult {
     onPromoBookPress,
     onSalonPress,
     onViewAllSalons,
+    onViewAllPopularSalons,
   };
 }

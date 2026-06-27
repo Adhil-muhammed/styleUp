@@ -13,6 +13,9 @@ export { default as BookingCalendarPanel } from "./BookingCalendarPanel";
 export { default as BookingTimeSlotCarousel } from "./BookingTimeSlotCarousel";
 export { default as BookingSpecialistCard } from "./BookingSpecialistCard";
 export { default as BookingSpecialistCarousel } from "./BookingSpecialistCarousel";
+export { default as BookingStatusTabs } from "./BookingStatusTabs";
+export { default as BookingAppointmentCard } from "./BookingAppointmentCard";
+export { default as BookingCancellationDialog } from "./BookingCancellationDialog";
 export {
   default as BookingContinueBar,
   BOOKING_CONTINUE_BAR_APPROX_HEIGHT,

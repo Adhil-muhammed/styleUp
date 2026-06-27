@@ -36,7 +36,7 @@ const SearchHeaderRow = ({
           autoFocus={autoFocus}
         />
       </View>
-      <Pressable
+      {/* <Pressable
         onPress={onClose}
         hitSlop={8}
         style={({ pressed }) => [
@@ -57,7 +57,7 @@ const SearchHeaderRow = ({
           size={22}
           color={theme.colors.text.primary}
         />
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 };

@@ -1,9 +1,17 @@
-import type { SearchSalonEntry } from "@/data/searchMock";
 import type { ResolvedNearestSalon } from "@/data/homeMock";
 import type { SearchFilterState } from "@/types/searchFilters";
 
+export type FilterableTargetGender = "man" | "woman";
+
+export interface FilterableSalonEntry {
+  shopId: string;
+  distanceKm: number;
+  categoryIds: readonly string[];
+  targetGenders: readonly FilterableTargetGender[];
+}
+
 export function matchesSearchFilters(
-  entry: SearchSalonEntry,
+  entry: FilterableSalonEntry,
   salon: ResolvedNearestSalon,
   filters: SearchFilterState,
 ): boolean {

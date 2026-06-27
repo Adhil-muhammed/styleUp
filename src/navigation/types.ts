@@ -18,6 +18,7 @@ export type RootStackParamList = {
   PaymentSummary: { shopId: string };
   PaymentSuccess: { shopId: string };
   Search: { initialQuery?: string } | undefined;
+  CategorySalons: { categoryId: string };
 };
 
 export type AuthStackParamList = {

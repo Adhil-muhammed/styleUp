@@ -28,6 +28,7 @@ interface SearchFilterSheetProps {
   serviceOptions: readonly FilterOption[];
   draftFilters: SearchFilterState;
   draftFilterCount: number;
+  showServiceFilters?: boolean;
   onDismiss: () => void;
   onClear: () => void;
   onApply: () => void;
@@ -41,6 +42,7 @@ const SearchFilterSheet = ({
   serviceOptions,
   draftFilters,
   draftFilterCount,
+  showServiceFilters = true,
   onDismiss,
   onClear,
   onApply,
@@ -177,13 +179,15 @@ const SearchFilterSheet = ({
           </Pressable>
         </View>
 
-        <SearchFilterSection title="Services:">
-          <ServiceFilterChips
-            options={serviceOptions}
-            selectedIds={draftFilters.serviceIds}
-            onToggle={onToggleService}
-          />
-        </SearchFilterSection>
+        {showServiceFilters ? (
+          <SearchFilterSection title="Services:">
+            <ServiceFilterChips
+              options={serviceOptions}
+              selectedIds={draftFilters.serviceIds}
+              onToggle={onToggleService}
+            />
+          </SearchFilterSection>
+        ) : null}
 
         <SearchFilterSection title="Rating:">
           <RatingFilterPicker

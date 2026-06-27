@@ -70,3 +70,54 @@ export const NEAREST_SALONS: readonly NearestSalon[] = [
   { shopId: "shop-1", distanceKm: 5 },
   { shopId: "shop-2", distanceKm: 8 },
 ] as const;
+
+export const MOST_POPULAR_SALONS: readonly NearestSalon[] = [
+  { shopId: "shop-3", distanceKm: 15 },
+  { shopId: "shop-1", distanceKm: 5 },
+] as const;
+
+export type HomeTargetGender = "man" | "woman";
+
+export interface HomeCategorySalonEntry extends NearestSalon {
+  categoryIds: readonly string[];
+  targetGenders: readonly HomeTargetGender[];
+}
+
+export const HOME_CATEGORY_SALON_ENTRIES: readonly HomeCategorySalonEntry[] = [
+  {
+    shopId: "shop-1",
+    distanceKm: 5,
+    categoryIds: ["haircuts", "beard", "make-up"],
+    targetGenders: ["man", "woman"],
+  },
+  {
+    shopId: "shop-2",
+    distanceKm: 8,
+    categoryIds: ["haircuts", "beard"],
+    targetGenders: ["man"],
+  },
+  {
+    shopId: "shop-3",
+    distanceKm: 15,
+    categoryIds: ["haircuts", "make-up", "manicure"],
+    targetGenders: ["man", "woman"],
+  },
+  {
+    shopId: "shop-4",
+    distanceKm: 25,
+    categoryIds: ["make-up", "manicure"],
+    targetGenders: ["woman"],
+  },
+  {
+    shopId: "shop-5",
+    distanceKm: 48,
+    categoryIds: ["haircuts", "manicure"],
+    targetGenders: ["man", "woman"],
+  },
+  {
+    shopId: "shop-6",
+    distanceKm: 89,
+    categoryIds: ["beard", "manicure"],
+    targetGenders: ["woman"],
+  },
+] as const;
