@@ -1,6 +1,6 @@
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { BookingSectionHeader } from "@/components/booking";
 import { DiscoverSearchBar } from "@/components/discover";
 import {
@@ -9,7 +9,8 @@ import {
   HomePromoBanner,
   HomeSalonListCard,
 } from "@/components/home";
-import { getTabBarTotalHeight } from "@/components/layout/MidnightEdgeTabBar";
+import Typography from "@/components/common/Typography";
+import { useAuth } from "@/hooks/useAuth";
 import { useHomeScreen } from "@/hooks/useHomeScreen";
 import { useTheme } from "@/hooks/useTheme";
 import type { AppTabScreenProps } from "@/navigation/types";
@@ -18,11 +19,8 @@ type Props = AppTabScreenProps<"Home">;
 
 const HomeScreen = (_props: Props): React.JSX.Element => {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
+  const { logout } = useAuth();
   const home = useHomeScreen();
-
-  const scrollBottomPadding =
-    getTabBarTotalHeight(insets.bottom) + theme.spacing.stackMd;
 
   return (
     <SafeAreaView
@@ -34,7 +32,7 @@ const HomeScreen = (_props: Props): React.JSX.Element => {
         contentContainerStyle={[
           styles.scrollContent,
           {
-            paddingBottom: scrollBottomPadding,
+            paddingBottom: theme.spacing.stackMd,
             gap: theme.spacing.sectionGap,
           },
         ]}
@@ -51,6 +49,17 @@ const HomeScreen = (_props: Props): React.JSX.Element => {
             onNotificationPress={home.onNotificationPress}
             onFavoritesPress={home.onFavoritesPress}
           />
+          {__DEV__ && (
+            <Pressable
+              onPress={logout}
+              hitSlop={8}
+              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+            >
+              <Typography variant="labelSm" color={theme.colors.semantic.error}>
+                [DEV] Sign Out
+              </Typography>
+            </Pressable>
+          )}
           <DiscoverSearchBar
             value={home.searchQuery}
             onChangeText={home.onSearchChange}
@@ -65,8 +74,10 @@ const HomeScreen = (_props: Props): React.JSX.Element => {
           categories={home.categories}
           onCategoryPress={home.onCategoryPress}
         />
-
-        <HomePromoBanner promo={home.promo} onBookPress={home.onPromoBookPress} />
+        <HomePromoBanner
+          promo={home.promo}
+          onBookPress={home.onPromoBookPress}
+        />
 
         <View
           style={{

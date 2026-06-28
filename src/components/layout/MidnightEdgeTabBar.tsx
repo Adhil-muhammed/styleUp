@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { StyleSheet, View } from "react-native";
-import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
@@ -20,7 +19,6 @@ interface TabConfig {
   accessibilityLabel: string;
   icon: CommunityIconName;
   iconActive: CommunityIconName;
-  isElevated?: boolean;
 }
 
 const TAB_CONFIG: TabConfig[] = [
@@ -41,7 +39,6 @@ const TAB_CONFIG: TabConfig[] = [
     accessibilityLabel: "Bookings",
     icon: "calendar-outline",
     iconActive: "calendar",
-    isElevated: true,
   },
   {
     name: "Chat",
@@ -57,22 +54,6 @@ const TAB_CONFIG: TabConfig[] = [
   },
 ];
 
-/** Fixed chrome height excluding safe-area inset (icon-only bar). */
-export const TAB_BAR_PADDING_TOP = 4;
-export const TAB_BAR_PADDING_BOTTOM = 8;
-export const TAB_BAR_FLOAT_BOTTOM = 8;
-const TAB_BAR_INNER_HEIGHT = 40;
-
-export function getTabBarTotalHeight(safeAreaBottom: number): number {
-  return (
-    TAB_BAR_FLOAT_BOTTOM +
-    safeAreaBottom +
-    TAB_BAR_PADDING_TOP +
-    TAB_BAR_INNER_HEIGHT +
-    TAB_BAR_PADDING_BOTTOM
-  );
-}
-
 async function triggerTabHaptic(): Promise<void> {
   try {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -87,7 +68,6 @@ const MidnightEdgeTabBar = ({
 }: BottomTabBarProps): React.JSX.Element => {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const pillRadius = theme.borderRadius.full;
 
   const handlePress = useCallback(
     (routeName: TabRouteName, isFocused: boolean) => (): void => {
@@ -102,89 +82,42 @@ const MidnightEdgeTabBar = ({
   return (
     <View
       style={[
-        styles.host,
+        styles.bar,
         {
-          // paddingBottom: TAB_BAR_FLOAT_BOTTOM + insets.bottom,
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          // backgroundColor: "black",
-          elevation: 0,
+          backgroundColor: theme.colors.depth.level1,
+          borderTopColor: theme.colors.border.level1,
+          paddingBottom: insets.bottom,
         },
       ]}
     >
-      <View
-        style={[
-          styles.glassShell,
-          {
-            borderRadius: pillRadius,
-            borderColor: theme.colors.glass.border,
-          },
-        ]}
-      >
-        <BlurView
-          intensity={theme.glassmorphism.blur}
-          tint="dark"
-          style={[
-            StyleSheet.absoluteFill,
-            {
-              borderRadius: pillRadius,
-              backgroundColor: `${theme.colors.depth.level0}CC`,
-            },
-          ]}
-          pointerEvents="none"
-        />
-        <View
-          style={[
-            styles.bar,
-            {
-              paddingTop: TAB_BAR_PADDING_TOP,
-              paddingBottom: TAB_BAR_PADDING_BOTTOM,
-              minHeight: TAB_BAR_INNER_HEIGHT,
-            },
-          ]}
-        >
-          {state.routes.map((route, index) => {
-            const config = TAB_CONFIG.find((tab) => tab.name === route.name);
-            if (config === undefined) {
-              return null;
-            }
+      {state.routes.map((route, index) => {
+        const config = TAB_CONFIG.find((tab) => tab.name === route.name);
+        if (config === undefined) {
+          return null;
+        }
 
-            const isFocused = state.index === index;
+        const isFocused = state.index === index;
 
-            return (
-              <MidnightEdgeTabItem
-                key={route.key}
-                icon={config.icon}
-                iconActive={config.iconActive}
-                isFocused={isFocused}
-                isElevated={config.isElevated ?? false}
-                onPress={handlePress(config.name, isFocused)}
-                accessibilityLabel={config.accessibilityLabel}
-              />
-            );
-          })}
-        </View>
-      </View>
+        return (
+          <MidnightEdgeTabItem
+            key={route.key}
+            icon={config.icon}
+            iconActive={config.iconActive}
+            isFocused={isFocused}
+            onPress={handlePress(config.name, isFocused)}
+            accessibilityLabel={config.accessibilityLabel}
+          />
+        );
+      })}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  host: {
-    overflow: "visible",
-    zIndex: 10,
-  },
-  glassShell: {
-    overflow: "hidden",
-    borderWidth: 1,
-  },
   bar: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "flex-end",
-    overflow: "visible",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: 8,
   },
 });
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   BookingAppointmentCard,
@@ -8,7 +8,6 @@ import {
   BookingStatusTabs,
 } from "@/components/booking";
 import Typography from "@/components/common/Typography";
-import { getTabBarTotalHeight } from "@/components/layout/MidnightEdgeTabBar";
 import { useBookingsScreen } from "@/hooks/useBookingsScreen";
 import { useTheme } from "@/hooks/useTheme";
 import type { AppTabScreenProps } from "@/navigation/types";
@@ -17,11 +16,9 @@ type Props = AppTabScreenProps<"Bookings">;
 
 const BookingsScreen = (_props: Props): React.JSX.Element => {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
   const bookings = useBookingsScreen();
 
-  const scrollBottomPadding =
-    getTabBarTotalHeight(insets.bottom) + theme.spacing.stackLg;
+  const scrollBottomPadding = theme.spacing.stackLg;
   const hasAppointments = bookings.visibleAppointments.length > 0;
   const headerIconButtonStyle = [
     styles.headerIconButton,

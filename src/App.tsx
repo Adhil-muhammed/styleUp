@@ -1,16 +1,18 @@
 import "../global.css"; // NativeWind — must be imported at the application root
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold,
   useFonts,
-  Inter_400Regular,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Inter_800ExtraBold,
-} from "@expo-google-fonts/inter";
+} from "@expo-google-fonts/plus-jakarta-sans";
+import * as SplashScreen from "expo-splash-screen";
 import { useTheme } from "./hooks/useTheme";
 import RootNavigator from "./navigation/RootNavigator";
 import "@/store/settingsStore";
@@ -55,6 +57,8 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   );
 };
 
+SplashScreen.preventAutoHideAsync();
+
 // ─── Root App Component ────────────────────────────────────────────────────────
 //
 // Provider order (outermost → innermost):
@@ -65,16 +69,21 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 //           RootNavigator       — auth-gated navigation tree
 
 const App: React.FC = () => {
-  const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_600SemiBold,
-    Inter_700Bold,
-    Inter_800ExtraBold,
+  const [fontsLoaded, fontError] = useFonts({
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
   });
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

@@ -1,0 +1,120 @@
+---
+description: Enforces the Graphite color token system. All UI colors must come from useTheme() tokens. Hardcoded hex values are forbidden.
+alwaysApply: true
+---
+
+# Graphite Color Token System
+
+## Rule: No hardcoded colors
+
+Every color value in `src/` **must** come from the theme via `useTheme()`. Raw hex strings are forbidden in component and screen files.
+
+```typescript
+// BAD — hardcoded hex
+const styles = StyleSheet.create({
+  card: { backgroundColor: "#141414", borderColor: "#2E2E2E" },
+  label: { color: "#B0B0B0" },
+});
+
+// GOOD — theme tokens
+const theme = useTheme();
+const styles = StyleSheet.create({
+  card: { backgroundColor: theme.colors.depth.level1, borderColor: theme.colors.border.level1 },
+  label: { color: theme.colors.text.secondary },
+});
+```
+
+For `StyleSheet.create` that needs theme values, create the stylesheet inside the component (or memoize with `useMemo`) so `theme` is in scope.
+
+## Banned hex strings (old Midnight Edge)
+
+Never introduce these values — they belong to the replaced theme:
+
+`#0A0A0F` `#111118` `#1A1A24` `#131318` `#2A2A3A` `#4A4455`
+`#7C3AED` `#D2BBFF` `#6D28D9` `#1F1F25` `#CCC3D8` `#FFB95F`
+
+## Token quick-reference
+
+Access all tokens via `const theme = useTheme();` → `theme.colors.<path>`.
+
+### Backgrounds / depth
+
+| Token | Hex | Use |
+|---|---|---|
+| `depth.level0` | `#0D0D0D` | Deepest background, modals base |
+| `depth.background` | `#111111` | Screen root `backgroundColor` |
+| `depth.level1` | `#141414` | Cards, nav surface, bottom sheets |
+| `depth.level2` | `#1C1C1C` | Elevated cards, input fields |
+
+### Borders
+
+| Token | Hex | Use |
+|---|---|---|
+| `border.level1` | `#2E2E2E` | Default dividers and borders |
+
+### Primary interactive
+
+| Token | Hex | Use |
+|---|---|---|
+| `primary.default` | `#F5F5F5` | Primary buttons, active highlights |
+| `primary.dim` | `#B0B0B0` | Secondary buttons, ghost fills |
+| `primary.active` | `#E0E0E0` | Pressed / active state |
+
+### Text
+
+| Token | Hex | Use |
+|---|---|---|
+| `text.primary` | `#F5F5F5` | Headings, primary body |
+| `text.secondary` | `#B0B0B0` | Subtitles, captions |
+| `text.disabled` | `#3D3D3D` | Disabled labels |
+| `text.onPrimary` | `#0D0D0D` | Text/icons **on** white primary buttons |
+
+### Accent & gamification
+
+| Token | Hex | Use |
+|---|---|---|
+| `accent.amber` | `#D4AF37` | Premium CTAs, gold highlights |
+| `gamification.emerald` | `#4EDEA3` | Success badges, streaks |
+
+### Semantic
+
+| Token | Hex | Use |
+|---|---|---|
+| `semantic.success` | `#4EDEA3` | Success states |
+| `semantic.warning` | `#D4AF37` | Warning states |
+| `semantic.error` | `#F87171` | Error messages, destructive actions |
+
+### Nav
+
+| Token | Hex | Use |
+|---|---|---|
+| `nav.surface` | `#141414` | Tab bar background |
+| `nav.border` | `#2E2E2E` | Tab bar top border |
+| `nav.inactive` | `#555555` | Unselected tab icons/labels |
+| `nav.active` | `#F5F5F5` | Selected tab icon/label |
+
+### Special effects
+
+| Token | Value | Use |
+|---|---|---|
+| `focus.glow` | `rgba(245,245,245,0.15)` | Input focus ring shadow |
+| `glass.border` | `rgba(245,245,245,0.08)` | Glassmorphism card border |
+| `nav.surfaceScrim` | `rgba(20,20,20,0.92)` | Nav bar scrim overlay |
+| `nav.iconGlow` | `rgba(245,245,245,0.2)` | Active tab icon glow |
+| `gradient.premium` | `["#F5F5F5","#B0B0B0"]` | LinearGradient premium surfaces |
+
+## Helper functions (from `src/config/theme.ts`)
+
+```typescript
+import { focusGlowStyle, navSurfaceStyle } from "@/config/theme";
+
+// Focus ring on text inputs
+const shadow = focusGlowStyle(theme); // returns shadowColor/Offset/Opacity/Radius
+
+// Nav bar scrim
+const scrim = navSurfaceStyle(theme); // returns backgroundColor
+```
+
+## `text.onPrimary` — semantic flip reminder
+
+Primary is now **white** (`#F5F5F5`). Any text or icon that sits **on top of a primary-colored surface** must use `theme.colors.text.onPrimary` (`#0D0D0D`) — not white — so it remains legible.

@@ -23,13 +23,10 @@ const AppNavigator: React.FC = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          position: "absolute",
           backgroundColor: "transparent",
           borderTopWidth: 0,
           elevation: 0,
         },
-        tabBarBackground: () => null,
-        sceneStyle: { backgroundColor: "transparent" },
       }}
       initialRouteName="Home"
     >

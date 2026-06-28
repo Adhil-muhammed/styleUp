@@ -154,106 +154,107 @@ export interface Theme {
 export const midnightEdgeTokens = {
   colors: {
     depth: {
-      level0: "#0A0A0F",
-      level1: "#111118",
-      level2: "#1A1A24",
-      background: "#131318",
+      level0: "#0D0D0D",
+      level1: "#141414",
+      level2: "#1C1C1C",
+      background: "#111111",
     },
     border: {
-      level1: "#2A2A3A",
+      level1: "#2E2E2E",
     },
     primary: {
-      default: "#7C3AED",
-      dim: "#D2BBFF",
-      active: "#6D28D9",
+      default: "#F5F5F5",
+      dim: "#B0B0B0",
+      active: "#E0E0E0",
     },
     accent: {
-      amber: "#FFB95F",
+      amber: "#D4AF37",
     },
     gamification: {
       emerald: "#4EDEA3",
     },
     gradient: {
-      premium: ["#7C3AED", "#EC4899"] as const,
+      premium: ["#F5F5F5", "#B0B0B0"] as const,
     },
     focus: {
-      glow: "rgba(124, 58, 237, 0.4)",
+      glow: "rgba(245, 245, 245, 0.15)",
     },
     glass: {
-      border: "rgba(124, 58, 237, 0.15)",
+      border: "rgba(245, 245, 245, 0.08)",
     },
     text: {
-      primary: "#F4F4F5",
-      secondary: "#A1A1AA",
-      disabled: "#52525B",
-      onPrimary: "#FFFFFF",
+      primary: "#F5F5F5",
+      secondary: "#B0B0B0",
+      disabled: "#3D3D3D",
+      // Primary is now white — text on a primary surface must be dark
+      onPrimary: "#0D0D0D",
     },
     semantic: {
       success: "#4EDEA3",
-      warning: "#FFB95F",
+      warning: "#D4AF37",
       error: "#F87171",
     },
     nav: {
-      surface: "#1F1F25",
-      surfaceScrim: "rgba(31, 31, 37, 0.9)",
-      border: "#4A4455",
-      inactive: "#CCC3D8",
-      active: "#D2BBFF",
-      iconGlow: "rgba(124, 58, 237, 0.5)",
+      surface: "#141414",
+      surfaceScrim: "rgba(20, 20, 20, 0.92)",
+      border: "#2E2E2E",
+      inactive: "#555555",
+      active: "#F5F5F5",
+      iconGlow: "rgba(245, 245, 245, 0.2)",
     },
   },
   typography: {
     displayLg: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_800ExtraBold",
       fontSize: 48,
       fontWeight: "800" as const,
       lineHeight: 52,
       letterSpacingEm: -0.04,
     },
     headlineLg: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_700Bold",
       fontSize: 32,
       fontWeight: "700" as const,
       lineHeight: 38,
       letterSpacingEm: -0.02,
     },
     headlineLgMobile: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_700Bold",
       fontSize: 28,
       fontWeight: "700" as const,
       lineHeight: 34,
       letterSpacingEm: -0.02,
     },
     headlineMd: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_700Bold",
       fontSize: 24,
       fontWeight: "700" as const,
       lineHeight: 30,
       letterSpacingEm: -0.01,
     },
     bodyLg: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_400Regular",
       fontSize: 18,
       fontWeight: "400" as const,
       lineHeight: 28,
       letterSpacingEm: 0,
     },
     bodyMd: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_400Regular",
       fontSize: 16,
       fontWeight: "400" as const,
       lineHeight: 24,
       letterSpacingEm: 0,
     },
     labelMd: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_600SemiBold",
       fontSize: 14,
       fontWeight: "600" as const,
       lineHeight: 20,
       letterSpacingEm: 0.02,
     },
     labelSm: {
-      fontFamily: "Inter",
+      fontFamily: "PlusJakartaSans_700Bold",
       fontSize: 12,
       fontWeight: "700" as const,
       lineHeight: 16,
@@ -286,7 +287,7 @@ export const midnightEdgeTokens = {
       stiffness: 300,
       damping: 20,
     },
-    skeletonBase: "#1A1A24",
+    skeletonBase: "#1C1C1C",
   },
   icon: {
     strokeWidth: 1.5,
@@ -338,26 +339,28 @@ export const themes: Record<AppTheme, Theme> = {
 
 // ─── Typography Helper ────────────────────────────────────────────────────────
 
-/** Maps font weight to the loaded @expo-google-fonts/inter family name. */
-export function interFontFamily(weight: FontWeight): string {
+/** Maps font weight to the loaded @expo-google-fonts/plus-jakarta-sans family name. */
+export function jakartaSansFontFamily(weight: FontWeight): string {
   switch (weight) {
     case "800":
-      return "Inter_800ExtraBold";
+      return "PlusJakartaSans_800ExtraBold";
     case "700":
-      return "Inter_700Bold";
+      return "PlusJakartaSans_700Bold";
     case "600":
-      return "Inter_600SemiBold";
+      return "PlusJakartaSans_600SemiBold";
+    case "500":
+      return "PlusJakartaSans_500Medium";
     default:
-      return "Inter_400Regular";
+      return "PlusJakartaSans_400Regular";
   }
 }
 
-/** Converts a Midnight Edge typography token into a React Native TextStyle. */
+/** Converts a typography token into a React Native TextStyle. */
 export function toTextStyle(token: TypographyToken): TextStyle {
   const style: TextStyle = {
-    fontFamily: interFontFamily(token.fontWeight),
+    fontFamily: jakartaSansFontFamily(token.fontWeight),
     fontSize: token.fontSize,
-    fontWeight: token.fontWeight,
+    // fontWeight omitted — weight is encoded in the Plus Jakarta Sans family name
     lineHeight: token.lineHeight,
     letterSpacing: token.fontSize * token.letterSpacingEm,
   };
