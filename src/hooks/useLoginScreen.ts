@@ -99,11 +99,9 @@ export function useLoginScreen(): UseLoginScreenResult {
   }, [email, password, login]);
 
   const onForgotPassword = useCallback((): void => {
-    setErrors((current) => {
-      const { password: _passwordError, ...remainingErrors } = current;
-      return remainingErrors;
-    });
-  }, []);
+    setErrors({});
+    navigation.navigate("ForgotPasswordMethods");
+  }, [navigation]);
 
   const onCreateAccount = useCallback((): void => {
     navigation.navigate("Register");

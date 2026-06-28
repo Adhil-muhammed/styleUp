@@ -49,39 +49,6 @@ const BookingsScreen = (_props: Props): React.JSX.Element => {
             },
           ]}
         >
-          <View style={styles.header}>
-            <Typography
-              variant="headlineLgMobile"
-              color={theme.colors.text.primary}
-              style={styles.headerTitle}
-            >
-              Your Appointments
-            </Typography>
-            <View
-              style={[
-                styles.headerActions,
-                {
-                  gap: theme.spacing.stackSm,
-                },
-              ]}
-            >
-              <View style={headerIconButtonStyle}>
-                <MaterialIcons
-                  name="map"
-                  size={22}
-                  color={theme.colors.text.primary}
-                />
-              </View>
-              <View style={headerIconButtonStyle}>
-                <MaterialIcons
-                  name="tune"
-                  size={22}
-                  color={theme.colors.text.primary}
-                />
-              </View>
-            </View>
-          </View>
-
           <BookingStatusTabs
             activeStatus={bookings.activeStatus}
             onSelect={bookings.onStatusSelect}

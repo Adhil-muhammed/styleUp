@@ -2,7 +2,10 @@ import { useCallback, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { SocialProvider } from "@/components/auth";
+import { useAuth } from "@/hooks/useAuth";
 import type { AuthStackParamList } from "@/navigation/types";
+import type { User } from "@/types";
+import type { AuthTokenPair } from "@/types/api";
 
 type RegisterNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -32,8 +35,15 @@ function isEmailValid(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
+const DEMO_TOKENS: AuthTokenPair = {
+  accessToken: "demo-register-access-token",
+  refreshToken: "demo-register-refresh-token",
+  expiresAt: Date.now() + 3_600_000,
+};
+
 export function useRegisterScreen(): UseRegisterScreenResult {
   const navigation = useNavigation<RegisterNavigationProp>();
+  const { login, setPostAuthInitialTab } = useAuth();
   const [email, setEmail] = useState("daniel_austin@yourdomain.com");
   const [password, setPassword] = useState("stylequest");
   const [rememberMe, setRememberMe] = useState(true);
@@ -71,7 +81,27 @@ export function useRegisterScreen(): UseRegisterScreenResult {
     }
 
     setErrors(nextErrors);
-  }, [email, password]);
+
+    const hasErrors = Object.keys(nextErrors).length > 0;
+    if (hasErrors) {
+      return;
+    }
+
+    const demoUser: User = {
+      id: "demo-new-user-001",
+      email,
+      phoneNumber: "",
+      displayName: "New StyleQuest User",
+      avatarUrl: null,
+      xpPoints: 0,
+      level: 1,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setPostAuthInitialTab("Profile");
+    login(demoUser, DEMO_TOKENS);
+  }, [email, password, login, setPostAuthInitialTab]);
 
   const onSignIn = useCallback((): void => {
     navigation.navigate("Login");

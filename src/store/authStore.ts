@@ -7,11 +7,17 @@ import { STORAGE_KEYS } from "../config/constants";
 
 // ─── State & Action Interfaces ────────────────────────────────────────────────
 
+export type PostAuthInitialTab = "Profile" | null;
+export type AuthUserUpdate = Partial<
+  Pick<User, "displayName" | "email" | "phoneNumber" | "avatarUrl">
+>;
+
 export interface AuthStoreState {
   user: User | null;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  postAuthInitialTab: PostAuthInitialTab;
   /**
    * True once Zustand persist has finished rehydrating from AsyncStorage.
    * Always starts as false; flipped to true by onRehydrateStorage callback.
@@ -22,6 +28,8 @@ export interface AuthStoreState {
 interface AuthStoreActions {
   setAuth: (user: User, tokens: AuthTokenPair) => void;
   clearAuth: () => void;
+  updateUser: (updates: AuthUserUpdate) => void;
+  setPostAuthInitialTab: (tab: PostAuthInitialTab) => void;
   setHydrated: (hydrated: boolean) => void;
 }
 
@@ -34,6 +42,7 @@ const initialState: AuthStoreState = {
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
+  postAuthInitialTab: null,
   isHydrated: false,
 };
 
@@ -58,7 +67,26 @@ export const useAuthStore = create<AuthStore>()(
           accessToken: null,
           refreshToken: null,
           isAuthenticated: false,
+          postAuthInitialTab: null,
         }),
+
+      updateUser: (updates: AuthUserUpdate) =>
+        set((state) => {
+          if (state.user === null) {
+            return {};
+          }
+
+          return {
+            user: {
+              ...state.user,
+              ...updates,
+              updatedAt: new Date().toISOString(),
+            },
+          };
+        }),
+
+      setPostAuthInitialTab: (tab: PostAuthInitialTab) =>
+        set({ postAuthInitialTab: tab }),
 
       setHydrated: (hydrated: boolean) => set({ isHydrated: hydrated }),
     }),
@@ -74,8 +102,10 @@ export const useAuthStore = create<AuthStore>()(
         rehydratedState?.setHydrated(true);
       },
 
-      // Only persist auth credentials — isHydrated must always start as false
-      partialize: (state): Omit<AuthStoreState, "isHydrated"> => ({
+      // Only persist auth credentials — hydration and post-auth routing are transient
+      partialize: (
+        state,
+      ): Omit<AuthStoreState, "isHydrated" | "postAuthInitialTab"> => ({
         user: state.user,
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

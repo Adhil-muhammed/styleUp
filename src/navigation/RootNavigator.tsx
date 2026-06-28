@@ -12,13 +12,14 @@ import PaymentSummaryScreen from "../screens/PaymentSummaryScreen";
 import PaymentSuccessScreen from "../screens/PaymentSuccessScreen";
 import SearchScreen from "../screens/SearchScreen";
 import CategorySalonsScreen from "../screens/CategorySalonsScreen";
+import EditProfileScreen from "../screens/EditProfileScreen";
 import { useAuth } from "@/hooks/useAuth";
 import type { RootStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const RootNavigator: React.FC = () => {
-  const { isAuthenticated, isHydrated } = useAuth();
+  const { isAuthenticated, isHydrated, postAuthInitialTab } = useAuth();
 
   // Wait for Zustand persist to finish reading from AsyncStorage.
   // Fonts are guaranteed loaded by the time RootNavigator renders (App.tsx guard).
@@ -35,7 +36,15 @@ const RootNavigator: React.FC = () => {
       ) : (
         // Authenticated screens — main tabs + all detail/modal routes.
         <>
-          <Stack.Screen name="App" component={AppNavigator} />
+          <Stack.Screen
+            name="App"
+            component={AppNavigator}
+            initialParams={
+              postAuthInitialTab === "Profile"
+                ? { screen: "Profile" }
+                : undefined
+            }
+          />
           <Stack.Screen
             name="BarberProfile"
             component={BarberProfileScreen}
@@ -91,6 +100,11 @@ const RootNavigator: React.FC = () => {
           <Stack.Screen
             name="CategorySalons"
             component={CategorySalonsScreen}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            component={EditProfileScreen}
             options={{ animation: "slide_from_right" }}
           />
         </>

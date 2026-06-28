@@ -19,12 +19,16 @@ export type RootStackParamList = {
   PaymentSuccess: { shopId: string };
   Search: { initialQuery?: string } | undefined;
   CategorySalons: { categoryId: string };
+  EditProfile: undefined;
 };
 
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   OTP: { phoneNumber: string };
+  ForgotPasswordMethods: undefined;
+  ForgotPasswordOTP: { maskedContact: string; method: "sms" | "email" };
+  CreateNewPassword: undefined;
 };
 
 export type AppTabParamList = {
