@@ -1,14 +1,11 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import LoginScreen from "@/screens/LoginScreen";
+import RegisterScreen from "@/screens/RegisterScreen";
 import type { AuthStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
-// ─── Placeholder Screen Shells ────────────────────────────────────────────────
-// Feature implementation is deferred. Each shell returns null intentionally.
-
-const LoginScreen = (): null => null; /* Feature Screen Shell */
-const RegisterScreen = (): null => null; /* Feature Screen Shell */
 const OTPScreen = (): null => null; /* Feature Screen Shell */
 
 // ─── Navigator ────────────────────────────────────────────────────────────────

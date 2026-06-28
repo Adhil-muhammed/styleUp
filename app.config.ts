@@ -8,6 +8,7 @@ const config: ExpoConfig = {
   platforms: ["ios", "android", "web"],
   android: {
     package: "com.stylequest",
+    softwareKeyboardLayoutMode: "pan",
   },
   web: {
     bundler: "metro",
