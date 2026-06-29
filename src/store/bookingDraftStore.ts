@@ -35,6 +35,8 @@ export interface SetAppointmentDetailsInput {
 
 export interface BookingDraftStoreState {
   draft: BookingDraft | null;
+  /** Variant selections made while browsing a shop profile (no draft required) */
+  browsingSelections: Record<string, string>;
 }
 
 export interface BookingDraftStoreActions {
@@ -43,6 +45,8 @@ export interface BookingDraftStoreActions {
   setAppointmentDetails: (input: SetAppointmentDetailsInput) => void;
   setPaymentId: (paymentId: string) => void;
   setSelectedVariant: (categoryId: string, variantId: string) => void;
+  setBrowsingSelection: (categoryId: string, variantId: string) => void;
+  clearBrowsingSelections: () => void;
   clearDraft: () => void;
 }
 
@@ -60,6 +64,7 @@ function createDefaultAppointmentDetails(): SetAppointmentDetailsInput {
 
 export const useBookingDraftStore = create<BookingDraftStore>()((set, get) => ({
   draft: null,
+  browsingSelections: {},
 
   setDraftFromDiscover: (input: SetDraftFromDiscoverInput): void => {
     const bookServiceId = mapDiscoverServiceToBookId(input.discoverServiceId);
@@ -144,6 +149,16 @@ export const useBookingDraftStore = create<BookingDraftStore>()((set, get) => ({
         paymentId,
       },
     });
+  },
+
+  setBrowsingSelection: (categoryId: string, variantId: string): void => {
+    set((state) => ({
+      browsingSelections: { ...state.browsingSelections, [categoryId]: variantId },
+    }));
+  },
+
+  clearBrowsingSelections: (): void => {
+    set({ browsingSelections: {} });
   },
 
   clearDraft: (): void => {

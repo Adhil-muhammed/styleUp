@@ -98,6 +98,7 @@ const BarberProfileScreen = ({ route }: Props): React.JSX.Element => {
           ) : profile.activeTab === "services" ? (
             <ProfileServicesSection
               categories={profile.serviceCategories}
+              selectedVariantSummaries={profile.selectedVariantSummaries}
               onCategoryPress={profile.onServiceCategoryPress}
             />
           ) : profile.activeTab === "package" ? (
@@ -113,7 +114,9 @@ const BarberProfileScreen = ({ route }: Props): React.JSX.Element => {
                 { color: theme.colors.text.secondary },
               ]}
             >
-              {profile.activeTab.charAt(0).toUpperCase() + profile.activeTab.slice(1)} content coming soon.
+              {profile.activeTab.charAt(0).toUpperCase() +
+                profile.activeTab.slice(1)}{" "}
+              content coming soon.
             </Text>
           )}
         </View>
@@ -121,7 +124,10 @@ const BarberProfileScreen = ({ route }: Props): React.JSX.Element => {
 
       {showBookBar ? (
         <View style={styles.bookBar}>
-          <ProfileBookBar onBookNow={profile.onBookNow} />
+          <ProfileBookBar
+            onBookNow={profile.onBookNow}
+            totalCents={profile.totalSelectedCents}
+          />
         </View>
       ) : null}
     </View>

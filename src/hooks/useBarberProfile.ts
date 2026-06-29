@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
@@ -9,8 +9,13 @@ import {
   type ShopPackage,
   type ShopProfile,
 } from "@/data/barberProfileMock";
+import { getVariantById } from "@/data/serviceVariantMock";
 import { useBookingDraftStore } from "@/store/bookingDraftStore";
-import { navigateToOurServices } from "@/utils/navigateToOurServices";
+import {
+  navigateToBookAppointment,
+  navigateToOurServices,
+} from "@/utils/navigateToOurServices";
+import type { SelectedServiceVariantSummary } from "@/components/barberProfile/ServiceCategoryRow";
 import type { RootStackParamList } from "@/navigation/types";
 
 export interface UseBarberProfileResult {
@@ -19,6 +24,8 @@ export interface UseBarberProfileResult {
   isAboutExpanded: boolean;
   tabOptions: typeof PROFILE_TAB_OPTIONS;
   serviceCategories: readonly ServiceCategory[];
+  selectedVariantSummaries: Record<string, SelectedServiceVariantSummary>;
+  totalSelectedCents: number;
   packages: readonly ShopPackage[];
   onTabChange: (tabId: string) => void;
   onToggleAboutExpanded: () => void;
@@ -33,10 +40,22 @@ export interface UseBarberProfileResult {
 export function useBarberProfile(shopId: string): UseBarberProfileResult {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const setDraftFromDiscover = useBookingDraftStore((s) => s.setDraftFromDiscover);
+  const setSelectedVariant = useBookingDraftStore((s) => s.setSelectedVariant);
+  const clearBrowsingSelections = useBookingDraftStore((s) => s.clearBrowsingSelections);
+  const browsingSelections = useBookingDraftStore((s) => s.browsingSelections);
 
   const shop = useMemo(() => getShopProfile(shopId), [shopId]);
   const [activeTab, setActiveTab] = useState<ProfileTabId>("about");
   const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+
+  // Clear any stale browsing selections from a previous shop visit on fresh mount.
+  // With native stack, this effect does NOT re-fire when returning from
+  // BookAppointment (the screen stays mounted), so in-progress selections survive.
+  useEffect(() => {
+    clearBrowsingSelections();
+    // shopId is the key — if a new profile is opened, clear and start fresh.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shopId]);
 
   const onTabChange = useCallback((tabId: string): void => {
     if (
@@ -57,21 +76,62 @@ export function useBarberProfile(shopId: string): UseBarberProfileResult {
     navigation.goBack();
   }, [navigation]);
 
-  const navigateToBook = useCallback((): void => {
-    navigateToOurServices(navigation, setDraftFromDiscover, shop.id);
-  }, [navigation, setDraftFromDiscover, shop.id]);
-
   const onBookNow = useCallback((): void => {
-    navigateToBook();
-  }, [navigateToBook]);
+    if (Object.keys(browsingSelections).length > 0) {
+      navigateToBookAppointment(
+        navigation,
+        setDraftFromDiscover,
+        setSelectedVariant,
+        browsingSelections,
+        shop.id,
+      );
+    } else {
+      navigateToOurServices(navigation, setDraftFromDiscover, shop.id);
+    }
+  }, [
+    browsingSelections,
+    navigation,
+    setDraftFromDiscover,
+    setSelectedVariant,
+    shop.id,
+  ]);
 
   const onActionPress = useCallback((_actionId: string): void => {
     // Stub for future website, message, call, direction, share handlers.
   }, []);
 
-  const onServiceCategoryPress = useCallback((_categoryId: string): void => {
-    // Stub for future service category detail drill-down.
-  }, []);
+  const onServiceCategoryPress = useCallback(
+    (categoryId: string): void => {
+      navigation.navigate("ServiceVariants", { shopId: shop.id, categoryId });
+    },
+    [navigation, shop.id],
+  );
+
+  const selectedVariantSummaries = useMemo((): Record<
+    string,
+    SelectedServiceVariantSummary
+  > => {
+    const result: Record<string, SelectedServiceVariantSummary> = {};
+    for (const [categoryId, variantId] of Object.entries(browsingSelections)) {
+      const variant = getVariantById(variantId);
+      if (variant !== undefined) {
+        result[categoryId] = {
+          title: variant.title,
+          priceCents: variant.priceCents,
+        };
+      }
+    }
+    return result;
+  }, [browsingSelections]);
+
+  const totalSelectedCents = useMemo(
+    () =>
+      Object.values(selectedVariantSummaries).reduce(
+        (sum, v) => sum + v.priceCents,
+        0,
+      ),
+    [selectedVariantSummaries],
+  );
 
   const onPackagePress = useCallback(
     (packageId: string): void => {
@@ -93,6 +153,8 @@ export function useBarberProfile(shopId: string): UseBarberProfileResult {
     isAboutExpanded,
     tabOptions: PROFILE_TAB_OPTIONS,
     serviceCategories: shop.serviceCategories,
+    selectedVariantSummaries,
+    totalSelectedCents,
     packages: shop.packages,
     onTabChange,
     onToggleAboutExpanded,

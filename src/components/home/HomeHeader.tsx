@@ -67,7 +67,7 @@ const HomeHeader = ({
             onPress={onNotificationPress}
             showBadge
           />
-          <HomeIconButton icon="favorite-border" onPress={onFavoritesPress} />
+          {/* <HomeIconButton icon="favorite-border" onPress={onFavoritesPress} /> */}
         </View>
       </View>
     </View>

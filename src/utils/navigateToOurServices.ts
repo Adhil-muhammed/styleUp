@@ -10,9 +10,9 @@ const DEFAULT_PROFILE_ID = "me";
 const DEFAULT_PAYMENT_ID = DEFAULT_PAYMENT_METHOD_ID;
 
 type SetDraftFromDiscover = BookingDraftStore["setDraftFromDiscover"];
+type SetSelectedVariant = BookingDraftStore["setSelectedVariant"];
 
-export function navigateToOurServices(
-  navigation: NativeStackNavigationProp<RootStackParamList>,
+function buildDraft(
   setDraftFromDiscover: SetDraftFromDiscover,
   shopId: string,
 ): void {
@@ -26,6 +26,29 @@ export function navigateToOurServices(
     profileId: DEFAULT_PROFILE_ID,
     paymentId: DEFAULT_PAYMENT_ID,
   });
+}
 
+export function navigateToOurServices(
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+  setDraftFromDiscover: SetDraftFromDiscover,
+  shopId: string,
+): void {
+  buildDraft(setDraftFromDiscover, shopId);
   navigation.navigate("OurServices", { shopId });
+}
+
+export function navigateToBookAppointment(
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+  setDraftFromDiscover: SetDraftFromDiscover,
+  setSelectedVariant: SetSelectedVariant,
+  browsingSelections: Record<string, string>,
+  shopId: string,
+): void {
+  buildDraft(setDraftFromDiscover, shopId);
+
+  for (const [categoryId, variantId] of Object.entries(browsingSelections)) {
+    setSelectedVariant(categoryId, variantId);
+  }
+
+  navigation.navigate("BookAppointment", { shopId });
 }

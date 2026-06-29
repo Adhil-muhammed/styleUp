@@ -2,6 +2,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { getShopProfile } from "@/data/barberProfileMock";
+
+const EMPTY_VARIANTS: Record<string, string> = {};
 import {
   getVariantById,
   getVariantsForCategory,
@@ -32,9 +34,12 @@ export function useServiceVariantScreen(
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const selectedVariants = useBookingDraftStore(
-    (s) => s.draft?.selectedVariants ?? {},
+    (s) => s.draft?.selectedVariants ?? EMPTY_VARIANTS,
   );
   const setSelectedVariant = useBookingDraftStore((s) => s.setSelectedVariant);
+  const setBrowsingSelection = useBookingDraftStore(
+    (s) => s.setBrowsingSelection,
+  );
 
   const shop = useMemo(() => getShopProfile(shopId), [shopId]);
   const category = useMemo(
@@ -59,19 +64,18 @@ export function useServiceVariantScreen(
   );
 
   const [selectedVariantId, setSelectedVariantId] = useState(() => {
-    const initialVariants = getVariantsForCategory(
-      categoryId,
-      existingVariant?.gender ?? "man",
-    );
-
-    if (
-      existingVariant !== undefined &&
-      initialVariants.some((variant) => variant.id === existingVariant.id)
-    ) {
-      return existingVariant.id;
+    if (existingVariant === undefined) {
+      return "";
     }
 
-    return initialVariants[0]?.id ?? "";
+    const initialVariants = getVariantsForCategory(
+      categoryId,
+      existingVariant.gender,
+    );
+
+    return initialVariants.some((variant) => variant.id === existingVariant.id)
+      ? existingVariant.id
+      : "";
   });
 
   const onSelectGender = useCallback(
@@ -97,8 +101,15 @@ export function useServiceVariantScreen(
     }
 
     setSelectedVariant(categoryId, selectedVariantId);
+    setBrowsingSelection(categoryId, selectedVariantId);
     navigation.goBack();
-  }, [categoryId, navigation, selectedVariantId, setSelectedVariant]);
+  }, [
+    categoryId,
+    navigation,
+    selectedVariantId,
+    setBrowsingSelection,
+    setSelectedVariant,
+  ]);
 
   const selectedVariant = getVariantById(selectedVariantId);
   const estimateCents = selectedVariant?.priceCents ?? null;

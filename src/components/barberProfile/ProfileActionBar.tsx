@@ -4,7 +4,12 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useTheme } from "@/hooks/useTheme";
 import { toTextStyle } from "@/config/theme";
 
-type ProfileActionIcon = "explore" | "chat-bubble-outline" | "call" | "location-on" | "send";
+type ProfileActionIcon =
+  | "explore"
+  | "chat-bubble-outline"
+  | "call"
+  | "location-on"
+  | "send";
 
 interface ProfileAction {
   id: string;
@@ -15,7 +20,7 @@ interface ProfileAction {
 const PROFILE_ACTIONS: ProfileAction[] = [
   { id: "website", label: "Website", icon: "explore" },
   { id: "message", label: "Message", icon: "chat-bubble-outline" },
-  { id: "call", label: "Call", icon: "call" },
+  // { id: "call", label: "Call", icon: "call" },
   { id: "direction", label: "Direction", icon: "location-on" },
   { id: "share", label: "Share", icon: "send" },
 ];
